@@ -45,3 +45,15 @@ stringToCoordinate ('f':xs) = (5,(8 - read xs))
 stringToCoordinate ('g':xs) = (6,(8 - read xs))
 stringToCoordinate ('h':xs) = (7,(8 - read xs))
 
+coordinateToString :: Coordinate -> String 
+coordinateToString (0,z) = 'a' : (show (z+1))
+coordinateToString (1,z) = 'b' : (show (z+1))
+coordinateToString (2,z) = 'c' : (show (z+1))
+coordinateToString (3,z) = 'd' : (show (z+1))
+coordinateToString (4,z) = 'e' : (show (z+1))
+coordinateToString (5,z) = 'f' : (show (z+1))
+coordinateToString (6,z) = 'g' : (show (z+1))
+coordinateToString (7,z) = 'h' : (show (z+1))
+
+
+
