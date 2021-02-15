@@ -15,7 +15,6 @@ type Coordinate = (Int, Int)
 
 
 
-
 {-data PType represents the different piece types-}
 data PType = Bishop | Pawn | Rook | Knight | King | Queen
 
@@ -62,18 +61,24 @@ coordinateToString (6,z) = 'g' : (show (z+1))
 coordinateToString (7,z) = 'h' : (show (z+1))
 
 initBoard :: Board
-initBoard = [[Occupied (Piece Black Rook),Empty,Empty,Empty,Empty,Empty,Empty,Occupied (Piece Black Rook)],
+initBoard = [[Occupied (Piece Black Rook),Occupied (Piece Black Knight),Occupied (Piece Black Bishop),Occupied (Piece Black Queen),Occupied (Piece Black King),Occupied (Piece Black Bishop),Occupied (Piece Black Knight),Occupied (Piece Black Rook)],
+             [Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn)],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Occupied (Piece White Rook),Empty,Empty,Empty,Empty,Empty,Empty,Occupied (Piece White Rook)]]
+             [Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn)],
+             [Occupied (Piece White Rook),Occupied (Piece White Knight),Occupied (Piece White Bishop),Occupied (Piece White Queen),Occupied (Piece White King),Occupied (Piece White Bishop),Occupied (Piece White Knight),Occupied (Piece White Rook)]]
 
-printBoard :: Board -> String 
-printBoard ((x:xs):xss) = ("|"++show x) ++ printBoard (xs:xss)
-printBoard ([]:xs) = "|\n" ++ printBoard xs
-printBoard [] = ""
+printBoard :: Board -> IO ()
+printBoard board = putStrLn $ printBoard' 1 8 board
+
+printBoard' :: Int -> Int -> Board -> String 
+printBoard' 1 8 ((a:xs):xss) = ("  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" ") ++ printBoard' 2 8 (xs:xss)
+printBoard' 1 y ((a:xs):xss) = (show y++" ║"++show a++" ") ++ printBoard' 2 y (xs:xss)
+printBoard' x y ((a:xs):xss) = ("║"++show a++" ") ++ printBoard' (x+1) y (xs:xss)
+printBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n" ++ printBoard' 1 1 xs
+printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n" ++ printBoard' 1 (y-1) xs
+printBoard' x y []           =  "   a  b  c  d  e  f  g  h"
 
 
