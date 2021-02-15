@@ -75,10 +75,11 @@ printBoard board = putStrLn $ printBoard' 1 8 board
 
 printBoard' :: Int -> Int -> Board -> String 
 printBoard' 1 8 ((a:xs):xss) = ("  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" ") ++ printBoard' 2 8 (xs:xss)
-printBoard' 1 y ((a:xs):xss) = (show y++" ║"++show a++" ") ++ printBoard' 2 y (xs:xss)
-printBoard' x y ((a:xs):xss) = ("║"++show a++" ") ++ printBoard' (x+1) y (xs:xss)
-printBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n" ++ printBoard' 1 1 xs
-printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n" ++ printBoard' 1 (y-1) xs
+printBoard' 1 y ((a:xs):xss) = (show y++" ║"++show a++" ")                       ++ printBoard' 2 y (xs:xss)
+printBoard' x y ((a:xs):xss) = ("║"++show a++" ")                                ++ printBoard' (x+1) y (xs:xss)
+printBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n"               ++ printBoard' 1 1 xs
+printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printBoard' 1 (y-1) xs
 printBoard' x y []           =  "   a  b  c  d  e  f  g  h"
+
 
 
