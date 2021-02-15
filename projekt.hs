@@ -19,20 +19,19 @@ data PColor = White | Black
 
 
 
-
-showPiece :: Piece -> String 
-showPiece (Piece White Pawn) = "♙"
-showPiece (Piece White Bishop) = "♗"
-showPiece (Piece White Rook) = "♖"
-showPiece (Piece White Knight) = "♘"
-showPiece (Piece White King) = "♔"
-showPiece (Piece White Queen) = "♕"
-showPiece (Piece Black Pawn) = "♟"
-showPiece (Piece Black Bishop) = "♝"
-showPiece (Piece Black Rook) = "♜"
-showPiece (Piece Black Knight) = "♞"
-showPiece (Piece Black King) = "♚"
-showPiece (Piece Black Queen) = "♛"
+instance Show Piece where
+    show (Piece White Pawn) = "♙"
+    show (Piece White Bishop) = "♗"
+    show (Piece White Rook) = "♖"
+    show (Piece White Knight) = "♘"
+    show (Piece White King) = "♔"
+    show (Piece White Queen) = "♕"
+    show (Piece Black Pawn) = "♟"
+    show (Piece Black Bishop) = "♝"
+    show (Piece Black Rook) = "♜"
+    show (Piece Black Knight) = "♞"
+    show (Piece Black King) = "♚"
+    show (Piece Black Queen) = "♛"
 
 hej = "hej"
  
