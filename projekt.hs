@@ -32,5 +32,6 @@ showPiece Black Knight = "♞"
 showPiece Black King = "♚"
 showPiece Black Queen = "♛"
 
+hej = "hej"
  
 
