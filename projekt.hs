@@ -18,6 +18,7 @@ data PColor = White | Black
 
 instance Show Square where
     show Empty = " "
+    show (Occupied piece) = show piece
 
 instance Show Piece where
     show (Piece White Pawn) = "♙"
@@ -33,22 +34,20 @@ instance Show Piece where
     show (Piece Black King) = "♚"
     show (Piece Black Queen) = "♛"
 
-initBoard = [[Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+initBoard :: Board
+initBoard = [[Occupied (Piece Black Rook),Empty,Empty,Empty,Empty,Empty,Empty,Occupied (Piece Black Rook)],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty]]
+             [Occupied (Piece White Rook),Empty,Empty,Empty,Empty,Empty,Empty,Occupied (Piece White Rook)]]
 
-drawGrid :: Board -> IO ()
-drawGrid board = do
-    forM_ [0..7] $ \x ->
-      forM_ [0..7] $ \y -> do
-         putStrLn "Here's a square!"
-         putStrLn ("Square(" ++ show x ++ ", " ++ show y ++ ")")
-         -- add here the actual drawing Gloss commands
-    
+printBoard :: Board -> String 
+printBoard ((x:xs):xss) = ("|"++show x) ++ printBoard (xs:xss)
+printBoard ([]:xs) = "|\n" ++ printBoard xs
+printBoard [] = ""
+
  
 
