@@ -1,5 +1,5 @@
 import Data.Char
-
+import Test.HUnit
 type Board = [[Square]]
 
 
@@ -50,3 +50,6 @@ stringToCoordinate ('f':xs) = (5,(8 - read xs))
 stringToCoordinate ('g':xs) = (6,(8 - read xs))
 stringToCoordinate ('h':xs) = (7,(8 - read xs))
 
+
+performTests = runTestTT § TestList [test1]
+test1 = TestCase § assertEqual "stringToCoordinate a8" (0,0) 
