@@ -1,4 +1,6 @@
 import Data.Char
+import Control.Monad
+import Data.List
 
 type Board = [[Square]]
 
@@ -20,10 +22,9 @@ data PType = Bishop | Pawn | Rook | Knight | King | Queen
 {- data PColor represent the pieces color-}
 data PColor = White | Black
 
-
-
-
-
+instance Show Square where
+    show Empty = " "
+    show (Occupied piece) = show piece
 
 instance Show Piece where
     show (Piece White Pawn) = "♙"
@@ -60,5 +61,19 @@ coordinateToString (5,z) = 'f' : (show (z+1))
 coordinateToString (6,z) = 'g' : (show (z+1))
 coordinateToString (7,z) = 'h' : (show (z+1))
 
+initBoard :: Board
+initBoard = [[Occupied (Piece Black Rook),Empty,Empty,Empty,Empty,Empty,Empty,Occupied (Piece Black Rook)],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Occupied (Piece White Rook),Empty,Empty,Empty,Empty,Empty,Empty,Occupied (Piece White Rook)]]
+
+printBoard :: Board -> String 
+printBoard ((x:xs):xss) = ("|"++show x) ++ printBoard (xs:xss)
+printBoard ([]:xs) = "|\n" ++ printBoard xs
+printBoard [] = ""
 
 
