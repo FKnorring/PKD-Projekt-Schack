@@ -186,11 +186,14 @@ queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
 
 kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 kingmoves (x,y) White brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) [(x+1,y+1),(x-1,y-1), (x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) (kingmoves' (x,y))
 kingmoves (x,y) Black brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) [(x+1,y+1),(x-1,y-1), (x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) (kingmoves' (x,y))
   
 
- 
 
- 
+kingmoves' :: Coordinate -> [Coordinate]
+kingmoves' (x,y) = filter (`elem` (allSquarelist)) [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+
+allSquarelist :: [Coordinate]
+allSquarelist  = [(x,y) | x <- [0..7], y <- [0..7]]
