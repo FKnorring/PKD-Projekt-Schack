@@ -4,16 +4,20 @@ import Board
 pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 pawnMoves (x,6) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
-    [(x+1,5),(x-1,5)] ++ (x, 5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)])
+    (pawnMoves' (x,6) White) ++ if isEmpty (getSquare (x, 5) brd) then (x,5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)]) else []
 pawnMoves (x,y) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
-    [(x+1,y-1),(x-1,y-1)] ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
+    (pawnMoves' (x,y) White)  ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
 pawnMoves (x,1) Black brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
-    [(x+1,2),(x-1,2)] ++ (x, 2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)])
+    (pawnMoves' (x,1) Black) ++ if isEmpty (getSquare (x, 2) brd) then (x,2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)]) else []
 pawnMoves (x,y) Black brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
-    [(x+1,y+1),(x-1,y+1)] ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)]
+    (pawnMoves' (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)]
+
+pawnMoves' :: Coordinate -> PColor -> [Coordinate]
+pawnMoves' (x,y) White = validSquares [(x+1,y-1),(x-1,y-1)]
+pawnMoves' (x,y) Black = validSquares [(x+1,y+1),(x-1,y+1)]
 
 rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
