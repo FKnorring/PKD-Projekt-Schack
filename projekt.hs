@@ -1,6 +1,4 @@
 import Data.Char
-import Test.HUnit
-
 import Control.Monad
 import Data.List
 
@@ -42,6 +40,10 @@ instance Show Piece where
     show (Piece Black King) = "♚"
     show (Piece Black Queen) = "♛"
 
+isEmpty :: Square -> Bool 
+isEmpty Empty = True
+isEmpty _ = False
+
 stringToCoordinate :: String -> Coordinate
 stringToCoordinate "" = undefined
 stringToCoordinate ('a':xs) = (0,(8 - read xs))
@@ -57,14 +59,14 @@ stringToCoordinate ('h':xs) = (7,(8 - read xs))
 
 
 coordinateToString :: Coordinate -> String 
-coordinateToString (0,z) = 'a' : (show (z+1))
-coordinateToString (1,z) = 'b' : (show (z+1))
-coordinateToString (2,z) = 'c' : (show (z+1))
-coordinateToString (3,z) = 'd' : (show (z+1))
-coordinateToString (4,z) = 'e' : (show (z+1))
-coordinateToString (5,z) = 'f' : (show (z+1))
-coordinateToString (6,z) = 'g' : (show (z+1))
-coordinateToString (7,z) = 'h' : (show (z+1))
+coordinateToString (0,z) = 'a' : (show (8 - z))
+coordinateToString (1,z) = 'b' : (show (8 - z))
+coordinateToString (2,z) = 'c' : (show (8 - z))
+coordinateToString (3,z) = 'd' : (show (8 - z))
+coordinateToString (4,z) = 'e' : (show (8 - z))
+coordinateToString (5,z) = 'f' : (show (8 - z))
+coordinateToString (6,z) = 'g' : (show (8 - z))
+coordinateToString (7,z) = 'h' : (show (8 - z))
 
 initBoard :: Board
 initBoard = [[Occupied (Piece Black Rook),Occupied (Piece Black Knight),Occupied (Piece Black Bishop),Occupied (Piece Black Queen),Occupied (Piece Black King),Occupied (Piece Black Bishop),Occupied (Piece Black Knight),Occupied (Piece Black Rook)],
@@ -107,3 +109,9 @@ movePiece board = do
     newcord <- getLine
     let realNewCord = stringToCoordinate newcord
     return $ changeSquare realNewCord newboard piece
+
+possibleMoves = [ (x, y) | x <- [0..7], y <- [7,6..0]]
+
+rookmoves :: Coordinate -> Board -> [Coordinate]
+rookmoves (x,y) board = filter (\x -> isEmpty $ getSquare x board) moves  
+    where moves = filter (/=(x,y)) (filter ((==y).snd) possibleMoves ++ filter ((==x).fst ) possibleMoves)
