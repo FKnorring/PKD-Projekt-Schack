@@ -139,7 +139,7 @@ kingmoves (x,y) White brd = filter
    (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) (kingmoves' (x,y))
 kingmoves (x,y) Black brd = filter 
    (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) (kingmoves' (x,y))
-  
+
 
 
 kingmoves' :: Coordinate -> [Coordinate]
@@ -147,3 +147,19 @@ kingmoves' (x,y) = filter (`elem` (allSquarelist)) [(x+1,y+1),(x-1,y-1),(x+1,y-1
 
 allSquarelist :: [Coordinate]
 allSquarelist  = [(x,y) | x <- [0..7], y <- [0..7]]
+<<<<<<< Updated upstream
+=======
+
+horseMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+horseMoves (x,y) White brd = filter 
+   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) (horseMoves' (x,y))
+horseMoves (x,y) Black brd = filter 
+   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) (horseMoves' (x,y))
+
+
+horseMoves' :: Coordinate -> [Coordinate]
+horseMoves' (x,y) = filter (`elem` (allSquarelist)) [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
+
+
+    
+>>>>>>> Stashed changes
