@@ -111,10 +111,13 @@ whitesMove crd1 crd2 brd = do
                         repeat
         else do 
                 putStrLn "No white piece at coordinate"
+                putStrLn "Input move again:"
                 repeat
         where repeat = do crd1 <- getLine
                           crd2 <- getLine 
                           if null crd1 || null crd2 
-                            then return initBoard
+                            then do
+                                putStrLn "You need to input two coordinates"
+                                repeat
                             else do
                                 whitesMove crd1 crd2 brd
