@@ -89,4 +89,6 @@ kingmoves (x,y) White brd = filter
    (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) [(x+1,y+1),(x-1,y-1), (x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 kingmoves (x,y) Black brd = filter 
    (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) [(x+1,y+1),(x-1,y-1), (x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+
+
   
