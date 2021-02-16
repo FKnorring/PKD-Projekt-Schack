@@ -54,12 +54,70 @@ changeSquare' :: Int -> [Square] -> Square -> [Square]
 changeSquare' 0 (a:xs) square = square:xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 
-movePiece :: Board -> IO Board
-movePiece board = do
-    cord <- getLine
-    let realCord = stringToCoordinate cord
-        piece = getSquare realCord board
-        newboard = changeSquare realCord board Empty
-    newcord <- getLine
-    let realNewCord = stringToCoordinate newcord
-    return $ changeSquare realNewCord newboard piece
+movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
+movePiece board crd1 crd2 = do
+    let piece = getSquare crd1 board
+        newboard = changeSquare crd1 board Empty
+    return $ changeSquare crd2 newboard piece
+
+ 
+play brd = do
+    printBoard brd
+    putStrLn "White to play"
+    crd1 <- getLine
+    crd2 <- getLine 
+    if null crd1 || null crd2 
+        then return ()
+        else do
+            newbrd <- whitesMove crd1 crd2 brd
+            play newbrd
+    
+            
+whitesMove :: String -> String -> Board -> IO Board 
+whitesMove crd1 crd2 brd = do
+    let cord1 = stringToCoordinate crd1
+        cord2 = stringToCoordinate crd2
+    if not (isEmpty (getSquare cord1 brd)) && getColor (getSquare cord1 brd) == White
+        then case getSquare cord1 brd of
+            Occupied (Piece White Pawn) -> if cord2 `elem` pawnMoves cord1 White brd
+                then movePiece brd cord1 cord2 
+                else do 
+                        putStrLn "Invalid Move"
+                        repeat
+            Occupied (Piece White Rook) -> if cord2 `elem` rookmoves cord1 White brd
+                then movePiece brd cord1 cord2 
+                else do 
+                        putStrLn "Invalid Move"
+                        repeat
+            Occupied (Piece White Bishop) -> if cord2 `elem` bishopmoves cord1 White brd
+                then movePiece brd cord1 cord2 
+                else do 
+                        putStrLn "Invalid Move"
+                        repeat
+            Occupied (Piece White Queen) -> if cord2 `elem` queenmoves cord1 White brd
+                then movePiece brd cord1 cord2 
+                else do 
+                        putStrLn "Invalid Move"
+                        repeat
+            Occupied (Piece White Knight) -> if cord2 `elem` horseMoves cord1 White brd
+                then movePiece brd cord1 cord2 
+                else do 
+                        putStrLn "Invalid Move"
+                        repeat
+            Occupied (Piece White King) -> if cord2 `elem` kingmoves cord1 White brd
+                then movePiece brd cord1 cord2 
+                else do 
+                        putStrLn "Invalid Move"
+                        repeat
+        else do 
+                putStrLn "No white piece at coordinate"
+                putStrLn "Input move again:"
+                repeat
+        where repeat = do crd1 <- getLine
+                          crd2 <- getLine 
+                          if null crd1 || null crd2 
+                            then do
+                                putStrLn "You need to input two coordinates"
+                                repeat
+                            else do
+                                whitesMove crd1 crd2 brd
