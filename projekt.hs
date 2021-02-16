@@ -20,7 +20,7 @@ type Coordinate = (Int, Int)
 data PType = Bishop | Pawn | Rook | Knight | King | Queen
 
 {- data PColor represent the pieces color-}
-data PColor = White | Black
+data PColor = White | Black deriving (Eq)
 
 instance Show Square where
     show Empty = " "
@@ -43,6 +43,13 @@ instance Show Piece where
 isEmpty :: Square -> Bool 
 isEmpty Empty = True
 isEmpty _ = False
+
+getColor :: Square -> PColor
+getColor (Occupied (Piece White _)) = White
+getColor (Occupied (Piece Black _)) = Black
+
+getSquare :: Coordinate -> Board -> Square
+getSquare (x,y) board = (board !! y) !! x
 
 stringToCoordinate :: String -> Coordinate
 stringToCoordinate "" = undefined
@@ -89,9 +96,6 @@ printBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩�
 printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printBoard' 1 (y-1) xs
 printBoard' x y []           =  "   a  b  c  d  e  f  g  h"
 
-getSquare :: Coordinate -> Board -> Square
-getSquare (x,y) board = (board !! y) !! x
-
 changeSquare :: Coordinate -> Board -> Square -> Board
 changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
@@ -110,8 +114,33 @@ movePiece board = do
     let realNewCord = stringToCoordinate newcord
     return $ changeSquare realNewCord newboard piece
 
-possibleMoves = [ (x, y) | x <- [0..7], y <- [7,6..0]]
+rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
+rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
 
-rookmoves :: Coordinate -> Board -> [Coordinate]
-rookmoves (x,y) board = filter (\x -> isEmpty $ getSquare x board) moves  
-    where moves = filter (/=(x,y)) (filter ((==y).snd) possibleMoves ++ filter ((==x).fst ) possibleMoves)
+toFront :: Coordinate -> PColor -> Board -> [Coordinate]
+toFront (x,y) clr brd 
+    | y-1 == -1 = []
+    | isEmpty $ getSquare (x,y-1) brd = (x,y-1): toFront (x,y-1) clr brd 
+    | getColor (getSquare (x,y-1) brd) == clr = []
+    | otherwise = [(x,y-1)]
+
+toBack :: Coordinate -> PColor -> Board -> [Coordinate]
+toBack (x,y) clr brd 
+    | y+1 == 8 = []
+    | isEmpty $ getSquare (x,y+1) brd = (x,y+1): toBack (x,y+1) clr brd 
+    | getColor (getSquare (x,y+1) brd) == clr = []
+    | otherwise = [(x,y-1)]
+
+toLeft :: Coordinate -> PColor -> Board -> [Coordinate]
+toLeft (x,y) clr brd 
+    | x-1 == -1 = []
+    | isEmpty $ getSquare (x-1,y) brd = (x-1,y): toLeft (x-1,y) clr brd 
+    | getColor (getSquare (x-1,y) brd) == clr = []
+    | otherwise = [(x-1,y)]
+
+toRight :: Coordinate -> PColor -> Board -> [Coordinate]
+toRight (x,y) clr brd 
+    | x+1 == 8 = []
+    | isEmpty $ getSquare (x+1,y) brd = (x+1,y): toRight (x+1,y) clr brd 
+    | getColor (getSquare (x+1,y) brd) == clr = []
+    | otherwise = [(x+1,y)]
