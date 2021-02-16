@@ -144,3 +144,53 @@ toRight (x,y) clr brd
     | isEmpty $ getSquare (x+1,y) brd = (x+1,y): toRight (x+1,y) clr brd 
     | getColor (getSquare (x+1,y) brd) == clr = []
     | otherwise = [(x+1,y)]
+
+diagBR :: Coordinate -> PColor -> Board -> [Coordinate]
+diagBR (x,y) clr brd 
+    | x+1 == 8 = []
+    | y+1 == 8 = []
+    | isEmpty $ getSquare (x+1,y+1) brd = (x+1,y+1): diagBR (x+1,y+1) clr brd 
+    | getColor (getSquare (x+1,y+1) brd) == clr = []
+    | otherwise = [(x+1,y+1)]
+
+diagFR :: Coordinate -> PColor -> Board -> [Coordinate]
+diagFR (x,y) clr brd 
+    | x+1 == 8 = []
+    | y-1 == -1 = []
+    | isEmpty $ getSquare (x+1,y-1) brd = (x+1,y-1): diagFR (x+1,y-1) clr brd 
+    | getColor (getSquare (x+1,y-1) brd) == clr = []
+    | otherwise = [(x+1,y-1)]
+
+diagBL :: Coordinate -> PColor -> Board -> [Coordinate]
+diagBL (x,y) clr brd 
+    | x-1 == -1 = []
+    | y+1 == 8 = []
+    | isEmpty $ getSquare (x-1,y+1) brd = (x-1,y+1): diagBL (x-1,y+1) clr brd 
+    | getColor (getSquare (x-1,y+1) brd) == clr = []
+    | otherwise = [(x-1,y+1)]
+
+diagFL :: Coordinate -> PColor -> Board -> [Coordinate]
+diagFL (x,y) clr brd 
+    | x-1 == -1 = []
+    | y-1 == -1 = []
+    | isEmpty $ getSquare (x-1,y-1) brd = (x-1,y-1): diagFL (x-1,y-1) clr brd 
+    | getColor (getSquare (x-1,y-1) brd) == clr = []
+    | otherwise = [(x-1,y-1)]
+
+
+bishopmoves :: Coordinate -> PColor -> Board -> [Coordinate]
+bishopmoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
+
+queenmoves :: Coordinate -> PColor -> Board -> [Coordinate]
+queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
+
+kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
+kingmoves (x,y) White brd = filter 
+   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) [(x+1,y+1),(x-1,y-1), (x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+kingmoves (x,y) Black brd = filter 
+   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) [(x+1,y+1),(x-1,y-1), (x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+  
+
+ 
+
+ 
