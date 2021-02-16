@@ -81,5 +81,23 @@ printBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩�
 printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printBoard' 1 (y-1) xs
 printBoard' x y []           =  "   a  b  c  d  e  f  g  h"
 
+getSquare :: Coordinate -> Board -> Square
+getSquare (x,y) board = (board !! y) !! x
 
+changeSquare :: Coordinate -> Board -> Square -> Board
+changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
+changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
 
+changeSquare' :: Int -> [Square] -> Square -> [Square]
+changeSquare' 0 (a:xs) square = square:xs 
+changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
+
+movePiece :: Board -> IO Board
+movePiece board = do
+    cord <- getLine
+    let realCord = stringToCoordinate cord
+        piece = getSquare realCord board
+        newboard = changeSquare realCord board Empty
+    newcord <- getLine
+    let realNewCord = stringToCoordinate newcord
+    return $ changeSquare realNewCord newboard piece
