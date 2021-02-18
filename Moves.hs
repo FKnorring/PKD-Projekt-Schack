@@ -183,9 +183,9 @@ queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
 
 kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 kingmoves (x,y) White brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) (kingmoves' (x,y))
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= White) (kingmoves' (x,y))
 kingmoves (x,y) Black brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) (kingmoves' (x,y))
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= Black) (kingmoves' (x,y))
 
 
 
@@ -195,9 +195,9 @@ kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1)
 
 horseMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 horseMoves (x,y) White brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) (horseMoves' (x,y))
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= White) (horseMoves' (x,y))
 horseMoves (x,y) Black brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) (horseMoves' (x,y))
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= Black) (horseMoves' (x,y))
 
 
 horseMoves' :: Coordinate -> [Coordinate]
@@ -211,16 +211,15 @@ getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr King) [(x,y) 
 
 isChecked' :: PColor -> Board -> [Coordinate]
 
-isChecked' clr brd = concat $ map (\x -> case getType (getSquare x brd) of 
+isChecked' clr brd = concatMap (\x -> case getType (getSquare x brd) of 
         Pawn -> pawnMoves x clr brd
         Knight -> horseMoves x clr brd
         Bishop -> bishopmoves x clr brd
         Queen -> queenmoves x clr brd
         Rook -> rookmoves x clr brd
         King -> kingmoves x clr brd)
-        
         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
 
 isChecked :: PColor -> Board -> Bool
-isChecked clr brd = getKing (clr) brd `elem` isChecked' (other clr) brd
+isChecked clr brd = getKing clr brd `elem` isChecked' (other clr) brd
 
