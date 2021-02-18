@@ -33,26 +33,26 @@ strToCoord (_:xs) = undefined
 
 
 
-{-coordToString 
+{-coordToStr coordinate
 A function that converts a Coordinate into a string of a char and a int
   PRE: the ints must be from 0 to 7 
   RETURNS: a string containing a char and a int
-  EXAMPLES: coordToString (0,0) = "a8"
-            coordToString (7,7) = "h1"
-            coordToString (5,5) = "f3"
+  EXAMPLES: coordToStr (0,0) = "a8"
+            coordToStr (7,7) = "h1"
+            coordToStr (5,5) = "f3"
 
 -}
 
 
-coordToString :: Coordinate -> String 
-coordToString (0,z) = 'a' : show (8 - z)
-coordToString (1,z) = 'b' : show (8 - z)
-coordToString (2,z) = 'c' : show (8 - z)
-coordToString (3,z) = 'd' : show (8 - z)
-coordToString (4,z) = 'e' : show (8 - z)
-coordToString (5,z) = 'f' : show (8 - z)
-coordToString (6,z) = 'g' : show (8 - z)
-coordToString (7,z) = 'h' : show (8 - z)
+coordToStr :: Coordinate -> String 
+coordToStr (0,z) = 'a' : show (8 - z)
+coordToStr (1,z) = 'b' : show (8 - z)
+coordToStr (2,z) = 'c' : show (8 - z)
+coordToStr (3,z) = 'd' : show (8 - z)
+coordToStr (4,z) = 'e' : show (8 - z)
+coordToStr (5,z) = 'f' : show (8 - z)
+coordToStr (6,z) = 'g' : show (8 - z)
+coordToStr (7,z) = 'h' : show (8 - z)
 
 
 {-initBoard

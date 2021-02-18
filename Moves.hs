@@ -206,11 +206,9 @@ horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+
 --OpPieces :: Board -> [Coordinate]
 
 getKing :: PColor -> Board -> Coordinate
-
 getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr King) [(x,y) | x <- [0..7], y <- [0..7]])
 
 isChecked' :: PColor -> Board -> [Coordinate]
-
 isChecked' clr brd = concatMap (\x -> case getType (getSquare x brd) of 
         Pawn -> pawnMoves x clr brd
         Knight -> horseMoves x clr brd
