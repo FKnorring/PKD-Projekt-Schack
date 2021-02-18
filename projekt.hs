@@ -9,50 +9,50 @@ type Exceptional a = Main.Either Exception a
 
 throw :: Exception -> Exceptional a 
 throw x = Main.Left x
-{-stringToCoordinate str
+{-strToCoord str
    PRE: the char must from a to h and the inte muste be from 1 to 8 
 a function that converts a char and a int into a tuple of ints in form of coordinates where the char is the first int in the tuple
 and the int is the second int in the tuple
   RETURNS: a tuple of ints 
-  EXAMPLES: stringToCoordinate "a4" = (0,4)
-            stringToCoordinate "a1" = (0,7)
-            stringToCoordinate "h1" = (7,7)
+  EXAMPLES: strToCoord "a4" = (0,4)
+            strToCoord "a1" = (0,7)
+            strToCoord "h1" = (7,7)
 
 -}
-stringToCoordinate :: String ->  Coordinate
-stringToCoordinate "" = undefined
-stringToCoordinate ('a':xs) =  (0,8 - read xs)
-stringToCoordinate ('b':xs) =  (1,8 - read xs)
-stringToCoordinate ('c':xs) =  (2,8 - read xs)
-stringToCoordinate ('d':xs) =  (3,8 - read xs)
-stringToCoordinate ('e':xs) =  (4,8 - read xs)
-stringToCoordinate ('f':xs) =  (5,8 - read xs)
-stringToCoordinate ('g':xs) =  (6,8 - read xs)
-stringToCoordinate ('h':xs) =  (7,8 - read xs)
-stringToCoordinate (_:xs) = undefined
+strToCoord :: String ->  Coordinate
+strToCoord "" = undefined
+strToCoord ('a':xs) =  (0,8 - read xs)
+strToCoord ('b':xs) =  (1,8 - read xs)
+strToCoord ('c':xs) =  (2,8 - read xs)
+strToCoord ('d':xs) =  (3,8 - read xs)
+strToCoord ('e':xs) =  (4,8 - read xs)
+strToCoord ('f':xs) =  (5,8 - read xs)
+strToCoord ('g':xs) =  (6,8 - read xs)
+strToCoord ('h':xs) =  (7,8 - read xs)
+strToCoord (_:xs) = undefined
 
 
 
-{-coordinateToString 
+{-coordToString 
 A function that converts a Coordinate into a string of a char and a int
   PRE: the ints must be from 0 to 7 
   RETURNS: a string containing a char and a int
-  EXAMPLES: coordinateToString (0,0) = "a8"
-            coordinateToString (7,7) = "h1"
-            coordinateToString (5,5) = "f3"
+  EXAMPLES: coordToString (0,0) = "a8"
+            coordToString (7,7) = "h1"
+            coordToString (5,5) = "f3"
 
 -}
 
 
-coordinateToString :: Coordinate -> String 
-coordinateToString (0,z) = 'a' : show (8 - z)
-coordinateToString (1,z) = 'b' : show (8 - z)
-coordinateToString (2,z) = 'c' : show (8 - z)
-coordinateToString (3,z) = 'd' : show (8 - z)
-coordinateToString (4,z) = 'e' : show (8 - z)
-coordinateToString (5,z) = 'f' : show (8 - z)
-coordinateToString (6,z) = 'g' : show (8 - z)
-coordinateToString (7,z) = 'h' : show (8 - z)
+coordToString :: Coordinate -> String 
+coordToString (0,z) = 'a' : show (8 - z)
+coordToString (1,z) = 'b' : show (8 - z)
+coordToString (2,z) = 'c' : show (8 - z)
+coordToString (3,z) = 'd' : show (8 - z)
+coordToString (4,z) = 'e' : show (8 - z)
+coordToString (5,z) = 'f' : show (8 - z)
+coordToString (6,z) = 'g' : show (8 - z)
+coordToString (7,z) = 'h' : show (8 - z)
 
 
 {-initBoard
@@ -123,7 +123,7 @@ askMove = do
     crd1 <- getLine
     crd2 <- getLine 
     if crd1 `elem` validInputs && crd2 `elem` validInputs
-        then return (stringToCoordinate crd1,stringToCoordinate crd2)
+        then return (strToCoord crd1,strToCoord crd2)
         else do
             putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
@@ -133,6 +133,7 @@ validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
 
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
+    newbrd <- movePiece brd crd1 crd2
     let pieceMoves = case piece of
             Pawn -> pawnMoves crd1 clr brd
             Knight -> horseMoves crd1 clr brd
@@ -140,8 +141,13 @@ validMove clr piece crd1 crd2 brd = do
             Queen -> queenmoves crd1 clr brd
             Rook -> rookmoves crd1 clr brd
             King -> kingmoves crd1 clr brd
-    if crd2 `elem` pieceMoves
-        then movePiece brd crd1 crd2 
+    if crd2 `elem` pieceMoves        
+        then if isChecked clr newbrd
+            then do
+                putStrLn "Invalid Move, You are in check!"
+                (crd1,crd2) <- askMove
+                playerTurn crd1 crd2 clr brd
+            else movePiece brd crd1 crd2
         else do 
             putStrLn "Invalid Move"
             (crd1,crd2) <- askMove
