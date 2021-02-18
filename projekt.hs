@@ -125,7 +125,7 @@ askMove = do
     if crd1 `elem` validInputs && crd2 `elem` validInputs
         then return (stringToCoordinate crd1,stringToCoordinate crd2)
         else do
-            putStrLn "Either or both inputs are not a coordinate"
+            putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
 
 
