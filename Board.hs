@@ -12,7 +12,7 @@ type Coordinate = (Int, Int)
 
 
 {-data PType represents the different piece types-}
-data PType = Bishop | Pawn | Rook | Knight | King | Queen
+data PType = Bishop | Pawn | Rook | Knight | King | Queen deriving (Show)
 
 {- data PColor represent the pieces color-}
 data PColor = White | Black deriving (Eq, Show)

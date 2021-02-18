@@ -1,6 +1,6 @@
 import Board
 import Moves
-
+import Debug.Trace
 
 data Either a b = Left a | Right b 
 data Exception = OutofBounds
@@ -100,6 +100,7 @@ movePiece board crd1 crd2 = do
 play :: Board -> PColor -> IO ()
 play brd clr = do
     printBoard brd
+    putStrLn (show clr ++ " to play")
     (crd1,crd2) <- askMove
     newbrd <- playerTurn crd1 crd2 clr brd
     play newbrd $ other clr
@@ -122,7 +123,7 @@ askMove = do
     crd1 <- getLine
     crd2 <- getLine 
     if crd1 `elem` validInputs && crd2 `elem` validInputs
-        then return (stringToCoordinate crd1,stringToCoordinate crd1)
+        then return (stringToCoordinate crd1,stringToCoordinate crd2)
         else do
             putStrLn "Either or both inputs are not a coordinate"
             askMove
@@ -132,15 +133,16 @@ validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
 
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
-    if crd2 `elem` (case piece of
-        Pawn -> pawnMoves crd1 clr brd
-        Knight -> horseMoves crd1 clr brd
-        Bishop -> bishopmoves crd1 clr brd
-        Queen -> queenmoves crd1 clr brd
-        Rook -> rookmoves crd1 clr brd
-        King -> kingmoves crd1 clr brd
-        )
+    let pieceMoves = case piece of
+            Pawn -> pawnMoves crd1 clr brd
+            Knight -> horseMoves crd1 clr brd
+            Bishop -> bishopmoves crd1 clr brd
+            Queen -> queenmoves crd1 clr brd
+            Rook -> rookmoves crd1 clr brd
+            King -> kingmoves crd1 clr brd
+    if crd2 `elem` pieceMoves
         then movePiece brd crd1 crd2 
         else do 
             putStrLn "Invalid Move"
+            (crd1,crd2) <- askMove
             playerTurn crd1 crd2 clr brd
