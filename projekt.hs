@@ -91,22 +91,6 @@ changeSquare' :: Int -> [Square] -> Square -> [Square]
 changeSquare' 0 (a:xs) square = square:xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 
-movePiece :: Board -> IO Board
-movePiece board = do
-    cord <- getLine
-    let realCord = stringToCoordinate cord
-        piece = getSquare realCord board
-        newboard = changeSquare realCord board Empty
-    newcord <- getLine
-    let realNewCord = stringToCoordinate newcord
-    return $ changeSquare realNewCord newboard piece
-
-
-
-
-    
-
-
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board

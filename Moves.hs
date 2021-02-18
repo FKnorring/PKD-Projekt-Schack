@@ -202,3 +202,25 @@ horseMoves (x,y) Black brd = filter
 
 horseMoves' :: Coordinate -> [Coordinate]
 horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
+
+--OpPieces :: Board -> [Coordinate]
+
+getKing :: PColor -> Board -> Coordinate
+
+getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr King) [(x,y) | x <- [0..7], y <- [0..7]])
+
+isChecked' :: PColor -> Board -> [Coordinate]
+
+isChecked' clr brd = concat $ map (\x -> case getType (getSquare x brd) of 
+        Pawn -> pawnMoves x clr brd
+        Knight -> horseMoves x clr brd
+        Bishop -> bishopmoves x clr brd
+        Queen -> queenmoves x clr brd
+        Rook -> rookmoves x clr brd
+        King -> kingmoves x clr brd)
+        
+        $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
+
+isChecked :: PColor -> Board -> Bool
+isChecked clr brd = getKing (clr) brd `elem` isChecked' (other clr) brd
+
