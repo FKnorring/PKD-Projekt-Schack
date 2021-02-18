@@ -1,22 +1,8 @@
 module Moves where
 import Board
 
-pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
-pawnMoves (x,6) White brd = filter 
-    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
-    [(x+1,5),(x-1,5)] ++ (x, 5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)])
-pawnMoves (x,y) White brd = filter 
-    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
-    [(x+1,y-1),(x-1,y-1)] ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
-pawnMoves (x,1) Black brd = filter 
-    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
-    [(x+1,2),(x-1,2)] ++ (x, 2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)])
-pawnMoves (x,y) Black brd = filter 
-    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
-    [(x+1,y+1),(x-1,y+1)] ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)]
-
-rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
+validSquares :: [Coordinate] -> [Coordinate]
+validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
 
 toFront :: Coordinate -> PColor -> Board -> [Coordinate]
 toFront (x,y) clr brd 
@@ -79,6 +65,24 @@ diagFL (x,y) clr brd
     | otherwise = [(x-1,y-1)]
 
 
+pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+pawnMoves (x,6) White brd = filter 
+    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
+    [(x+1,5),(x-1,5)] ++ (x, 5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)])
+pawnMoves (x,y) White brd = filter 
+    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
+    [(x+1,y-1),(x-1,y-1)] ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
+pawnMoves (x,1) Black brd = filter 
+    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
+    [(x+1,2),(x-1,2)] ++ (x, 2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)])
+pawnMoves (x,y) Black brd = filter 
+    (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
+    [(x+1,y+1),(x-1,y+1)] ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)]
+
+rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
+rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
+
+
 bishopmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 bishopmoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
 
@@ -96,9 +100,6 @@ kingmoves (x,y) Black brd = filter
 kingmoves' :: Coordinate -> [Coordinate]
 kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
-
-validSquares :: [Coordinate] -> [Coordinate]
-validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
 
 horseMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 horseMoves (x,y) White brd = filter 
