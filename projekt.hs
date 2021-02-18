@@ -58,14 +58,14 @@ coordinateToString (7,z) = 'h' : (show (8 - z))
 {-initBoard
 The chess boards startposition-}
 initBoard :: Board
-initBoard = [[Occupied (Piece Black Rook),Occupied (Piece Black Knight),Occupied (Piece Black Bishop),Occupied (Piece Black Queen),Occupied (Piece Black King),Occupied (Piece Black Bishop),Occupied (Piece Black Knight),Occupied (Piece Black Rook)],
-             [Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn),Occupied (Piece Black Pawn)],
+initBoard = [[Piece Black Rook,Piece Black Knight,Piece Black Bishop,Piece Black Queen,Piece Black King,Piece Black Bishop,Piece Black Knight,Piece Black Rook],
+             [Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn),Occupied (Piece White Pawn)],
-             [Occupied (Piece White Rook),Occupied (Piece White Knight),Occupied (Piece White Bishop),Occupied (Piece White Queen),Occupied (Piece White King),Occupied (Piece White Bishop),Occupied (Piece White Knight),Occupied (Piece White Rook)]]
+             [Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn],
+             [Piece White Rook,Piece White Knight,Piece White Bishop,Piece White Queen,Piece White King,Piece White Bishop,Piece White Knight,Piece White Rook]]
 
 {-printBoard
 a function that prints the current board to the terminal
@@ -97,134 +97,50 @@ movePiece board crd1 crd2 = do
         newboard = changeSquare crd1 board Empty
     return $ changeSquare crd2 newboard piece
 
- 
-
-
-
-play brd = do
+play :: Board -> PColor -> IO ()
+play brd clr = do
     printBoard brd
-    putStrLn "White to play"
+    (crd1,crd2) <- askMove
+    newbrd <- playerTurn crd1 crd2 clr brd
+    play newbrd $ other clr
+
+            
+playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
+playerTurn crd1 crd2 clr brd = do
+    if not (isEmpty sqrcord1) && getColor sqrcord1 == clr
+        then validMove clr (getType sqrcord1) crd1 crd2 brd
+        else do 
+                putStrLn $ "No " ++ show clr ++ " piece at coordinate"
+                (crd1,crd2) <- askMove
+                playerTurn crd1 crd2 clr brd
+        where sqrcord1 = getSquare crd1 brd
+
+
+askMove :: IO (Coordinate, Coordinate)
+askMove = do
+    putStrLn "Please input two valid coordinates"
     crd1 <- getLine
     crd2 <- getLine 
-    if null crd1 || null crd2 
-        then return ()
+    if crd1 `elem` validInputs && crd2 `elem` validInputs
+        then return (stringToCoordinate crd1,stringToCoordinate crd1)
         else do
-            newbrd <- whitesMove crd1 crd2 brd
-            printBoard newbrd
-            putStrLn "Black to play"
-            crd1 <- getLine
-            crd2 <- getLine
-            if null crd1 || null crd2
-              then return ()
-              else do 
-            newbrd' <- blackMove crd1 crd2 brd
-            play newbrd'
-play' brd = do
-    printBoard brd 
-    putStrLn "Black to play"
-    crd1 <- getLine
-    crd2 <- getLine
-    if null crd1 || null crd2
-        then return ()
-        else do 
-            newbrd' <- blackMove crd1 crd2 brd
-            play newbrd'
-    
-            
-whitesMove :: String -> String -> Board -> IO Board 
-whitesMove crd1 crd2 brd = do
-    let cord1 = stringToCoordinate crd1
-        cord2 = stringToCoordinate crd2
-    if not (isEmpty (getSquare cord1 brd)) && getColor (getSquare cord1 brd) == White
-        then case getSquare cord1 brd of
-            Occupied (Piece White Pawn) -> if cord2 `elem` pawnMoves cord1 White brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece White Rook) -> if cord2 `elem` rookmoves cord1 White brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece White Bishop) -> if cord2 `elem` bishopmoves cord1 White brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece White Queen) -> if cord2 `elem` queenmoves cord1 White brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece White Knight) -> if cord2 `elem` horseMoves cord1 White brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece White King) -> if cord2 `elem` kingmoves cord1 White brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-        else do 
-                putStrLn "No white piece at coordinate"
-                putStrLn "Input move again:"
-                repeat
-        where repeat = do crd1 <- getLine
-                          crd2 <- getLine 
-                          if null crd1 || null crd2 
-                            then do
-                                putStrLn "You need to input two coordinates"
-                                repeat
-                            else do
-                                whitesMove crd1 crd2 brd
+            putStrLn "Either or both inputs are not a coordinate"
+            askMove
 
-blackMove :: String -> String -> Board -> IO Board 
-blackMove crd1 crd2 brd = do
-    let cord1 = stringToCoordinate crd1
-        cord2 = stringToCoordinate crd2
-    if not (isEmpty (getSquare cord1 brd)) && getColor (getSquare cord1 brd) == Black
-        then case getSquare cord1 brd of
-            Occupied (Piece Black Pawn) -> if cord2 `elem` pawnMoves cord1 Black brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece Black Rook) -> if cord2 `elem` rookmoves cord1 Black brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece Black Bishop) -> if cord2 `elem` bishopmoves cord1 Black brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece Black Queen) -> if cord2 `elem` queenmoves cord1 Black brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece Black Knight) -> if cord2 `elem` horseMoves cord1 Black brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
-            Occupied (Piece Black King) -> if cord2 `elem` kingmoves cord1 Black brd
-                then movePiece brd cord1 cord2 
-                else do 
-                        putStrLn "Invalid Move"
-                        repeat
+
+validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
+
+validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
+validMove clr piece crd1 crd2 brd = do
+    if crd2 `elem` (case piece of
+        Pawn -> pawnMoves crd1 clr brd
+        Knight -> horseMoves crd1 clr brd
+        Bishop -> bishopmoves crd1 clr brd
+        Queen -> queenmoves crd1 clr brd
+        Rook -> rookmoves crd1 clr brd
+        King -> kingmoves crd1 clr brd
+        )
+        then movePiece brd crd1 crd2 
         else do 
-                putStrLn "No Black piece at coordinate"
-                putStrLn "Input move again:"
-                repeat
-        where repeat = do crd1 <- getLine
-                          crd2 <- getLine 
-                          if null crd1 || null crd2 
-                            then do
-                                putStrLn "You need to input two coordinates"
-                                repeat
-                            else do
-                                blackMove crd1 crd2 brd
+            putStrLn "Invalid Move"
+            playerTurn crd1 crd2 clr brd
