@@ -146,3 +146,5 @@ validMove clr piece crd1 crd2 brd = do
             putStrLn "Invalid Move"
             (crd1,crd2) <- askMove
             playerTurn crd1 crd2 clr brd
+
+

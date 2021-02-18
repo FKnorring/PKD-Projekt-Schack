@@ -3,7 +3,7 @@ module Board (Board, Square(..), PType(..), PColor(..), Coordinate, isEmpty, get
 type Board = [[Square]]
 
 {-data Square represents if a certain square is empty or contains a piece-}
-data Square = Empty | Piece PColor PType
+data Square = Empty | Piece PColor PType deriving (Eq)
 
 {- data Piece represents the specific piece-}
 
@@ -12,10 +12,12 @@ type Coordinate = (Int, Int)
 
 
 {-data PType represents the different piece types-}
-data PType = Bishop | Pawn | Rook | Knight | King | Queen deriving (Show)
+
+data PType = Bishop | Pawn | Rook | Knight | King | Queen deriving (Eq)
+
 
 {- data PColor represent the pieces color-}
-data PColor = White | Black deriving (Eq, Show)
+data PColor = White | Black | Null deriving (Eq, Show)
 
 instance Show Square where
     show Empty = " "
@@ -40,6 +42,7 @@ isEmpty _ = False
 getColor :: Square -> PColor
 getColor (Piece White _) = White
 getColor (Piece Black _) = Black
+getColor (Empty) = Null
 
 getType :: Square -> PType
 getType (Piece _ Pawn) = Pawn
@@ -51,6 +54,7 @@ getType (Piece _ Queen) = Queen
 
 getSquare :: Coordinate -> Board -> Square
 getSquare (x,y) board = (board !! y) !! x
+
 
 
 
