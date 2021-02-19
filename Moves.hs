@@ -182,11 +182,8 @@ queenmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
 
 kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-kingmoves (x,y) White brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= White) (kingmoves' (x,y))
-kingmoves (x,y) Black brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= Black) (kingmoves' (x,y))
-
+kingmoves (x,y) clr brd = filter 
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y))
 
 
 kingmoves' :: Coordinate -> [Coordinate]
@@ -194,10 +191,8 @@ kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1)
 
 
 horseMoves :: Coordinate -> PColor -> Board -> [Coordinate]
-horseMoves (x,y) White brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= White) (horseMoves' (x,y))
-horseMoves (x,y) Black brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= Black) (horseMoves' (x,y))
+horseMoves (x,y) clr brd = filter 
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (horseMoves' (x,y))
 
 
 horseMoves' :: Coordinate -> [Coordinate]
@@ -242,18 +237,6 @@ clearQSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [
 
 clearQSide :: PColor -> Board -> Bool
 clearQSide clr brd = (clearQSide' clr brd) == [(Piece clr Rook),(Empty),(Empty),(Empty),(Piece clr King)]
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 castleBoard :: Board

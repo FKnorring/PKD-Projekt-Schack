@@ -163,6 +163,11 @@ askMove = do
             putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
 
+makeMove :: PColor -> Board -> IO Board
+makeMove clr brd = do
+        (crd1,crd2) <- askMove
+        playerTurn crd1 crd2 clr brd
+    
 
 validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]] ++ ["O-O","O-O-O"]
 
@@ -179,14 +184,12 @@ validMove clr piece crd1 crd2 brd = do
         if crd2 `elem` pieceMoves        
             then if isChecked clr newbrd
                 then do
-                    putStrLn "Invalid Move, You are in check!"
-                    (crd1,crd2) <- askMove
-                    playerTurn crd1 crd2 clr brd
+                    putStrLn "Invalid Move"
+                    makeMove clr brd
                 else movePiece brd crd1 crd2
             else do 
                 putStrLn "Invalid Move"
-                (crd1,crd2) <- askMove
-                playerTurn crd1 crd2 clr brd
+                makeMove clr brd
 
 isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
@@ -263,23 +266,20 @@ kingSideCastle :: PColor -> Board -> IO Board
 kingSideCastle clr brd = do
     if isChecked clr brd 
         then do
-            putStrLn "You cant castle, you are in check "
-            (cord1,cord2) <- askMove
-            playerTurn cord1 cord2 clr brd 
+            putStrLn "You can't castle, you are in check "
+            makeMove clr brd 
         else 
             if canCastleK clr brd 
                 then do
                     newbrd <- kCastle clr brd 
                     if isChecked clr newbrd 
                         then do
-                            putStrLn "You cant castle, you will be in check "
-                            (cord1,cord2) <- askMove
-                            playerTurn cord1 cord2 clr brd
+                            putStrLn "You can't castle, you will be in check "
+                            makeMove clr brd
                         else return newbrd 
                 else do
-                        putStrLn "You cant castle, castling is blocked "
-                        (cord1,cord2) <- askMove
-                        playerTurn cord1 cord2 clr brd
+                        putStrLn "You can't castle, castling is blocked "
+                        makeMove clr brd
 
 queenSideCastle :: PColor -> Board -> IO Board
 queenSideCastle clr brd = do
