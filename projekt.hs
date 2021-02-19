@@ -9,6 +9,9 @@ type Exceptional a = Main.Either Exception a
 
 throw :: Exception -> Exceptional a 
 throw x = Main.Left x
+
+main :: IO () 
+main = play initBoard White 
 {-strToCoord str
    PRE: the char must from a to h and the inte muste be from 1 to 8 
 a function that converts a char and a int into a tuple of ints in form of coordinates where the char is the first int in the tuple
@@ -76,19 +79,19 @@ initBoard = [[Piece Black Rook,Piece Black Knight,Piece Black Bishop,Piece Black
 a function that prints the current board to the terminal
 -}
 printBoard :: PColor -> Board -> IO ()
-printBoard clr brd = putStrLn $ (case clr of
-        White -> printBoard' 1 8 brd
+printBoard clr brd = putStrLn (case clr of
+        White -> printWhiteBoard' 1 8 brd
         Black -> printBlackBoard' 1 8 brd)
 
-{-printBoard'
+{-printWhiteBoard'
 a function that makes a list of squares to a playable board-}
-printBoard' :: Int -> Int -> Board -> String 
-printBoard' 1 8 ((a:xs):xss) = ("  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" ") ++ printBoard' 2 8 (xs:xss)
-printBoard' 1 y ((a:xs):xss) = (show y++" ║"++show a++" ")                       ++ printBoard' 2 y (xs:xss)
-printBoard' x y ((a:xs):xss) = ("║"++show a++" ")                                ++ printBoard' (x+1) y (xs:xss)
-printBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n"               ++ printBoard' 1 1 xs
-printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printBoard' 1 (y-1) xs
-printBoard' x y []           =  "   a  b  c  d  e  f  g  h"
+printWhiteBoard' :: Int -> Int -> Board -> String 
+printWhiteBoard' 1 8 ((a:xs):xss) = ("  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" ") ++ printWhiteBoard' 2 8 (xs:xss)
+printWhiteBoard' 1 y ((a:xs):xss) = (show y++" ║"++show a++" ")                       ++ printWhiteBoard' 2 y (xs:xss)
+printWhiteBoard' x y ((a:xs):xss) = ("║"++show a++" ")                                ++ printWhiteBoard' (x+1) y (xs:xss)
+printWhiteBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n"               ++ printWhiteBoard' 1 1 xs
+printWhiteBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printWhiteBoard' 1 (y-1) xs
+printWhiteBoard' x y []           =  "   a  b  c  d  e  f  g  h"
 
 printBlackBoard' :: Int -> Int -> Board -> String 
 printBlackBoard' 1 8 ((a:xs):xss) = printBlackBoard' 2 8 (xs:xss) ++ ("║" ++ show a++" ║" ++  "\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n    h  g  f  e  d  c  b  a\n") 
