@@ -75,8 +75,10 @@ initBoard = [[Piece Black Rook,Piece Black Knight,Piece Black Bishop,Piece Black
 {-printBoard
 a function that prints the current board to the terminal
 -}
-printBoard :: Board -> IO ()
-printBoard board = putStrLn $ printBoard' 1 8 board
+printBoard :: PColor -> Board -> IO ()
+printBoard clr brd = putStrLn $ (case clr of
+        White -> printBoard' 1 8 brd
+        Black -> printBlackBoard' 1 8 brd)
 
 {-printBoard'
 a function that makes a list of squares to a playable board-}
@@ -87,6 +89,15 @@ printBoard' x y ((a:xs):xss) = ("║"++show a++" ")                             
 printBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n"               ++ printBoard' 1 1 xs
 printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printBoard' 1 (y-1) xs
 printBoard' x y []           =  "   a  b  c  d  e  f  g  h"
+
+printBlackBoard' :: Int -> Int -> Board -> String 
+printBlackBoard' 1 8 ((a:xs):xss) = printBlackBoard' 2 8 (xs:xss) ++ ("║" ++ show a++" ║ 8" ++  "\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n   h  g  f  e  d  c  b  a\n") 
+printBlackBoard' 1 y ((a:xs):xss) = printBlackBoard' 2 y (xs:xss) ++ ("║"++show a++" ║ "++show y)                       
+printBlackBoard' x y ((a:xs):xss) = printBlackBoard' (x+1) y (xs:xss) ++ ("║"++show a++" ")                                
+printBlackBoard' _ 1 ([]:xs)      = printBlackBoard' 1 1 xs ++ "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n  "               
+printBlackBoard' x y ([]:xs)      = printBlackBoard' 1 (y-1) xs ++ "\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n  "            
+printBlackBoard' x y []           =  ""
+
 
 changeSquare :: Coordinate -> Board -> Square -> Board
 changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
@@ -104,7 +115,7 @@ movePiece board crd1 crd2 = do
 
 play :: Board -> PColor -> IO ()
 play brd clr = do
-    printBoard brd
+    printBoard White brd
     mated <- isMated clr brd
     if mated
         then if isChecked clr brd 
@@ -139,36 +150,45 @@ askMove = do
     crd1 <- getLine
     crd2 <- getLine 
     if crd1 `elem` validInputs && crd2 `elem` validInputs
-        then return (strToCoord crd1,strToCoord crd2)
+        then case crd1 of
+            "O-O"   -> return ((99,99),(99,99))
+            "O-O-O" -> return ((-99,-99),(-99,-99))
+            _       -> return (strToCoord crd1,strToCoord crd2)
         else do
             putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
 
 
-validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
+validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]] ++ ["O-O","O-O-O"]
 
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
-    newbrd <- movePiece brd crd1 crd2
-    let pieceMoves = case piece of
-            Pawn -> pawnMoves crd1 clr brd
-            Knight -> horseMoves crd1 clr brd
-            Bishop -> bishopmoves crd1 clr brd
-            Queen -> queenmoves crd1 clr brd
-            Rook -> rookmoves crd1 clr brd
-            King -> kingmoves crd1 clr brd
-    if crd2 `elem` pieceMoves        
-        then if isChecked clr newbrd
-            then do
-                putStrLn "Invalid Move, You are in check!"
-                (crd1,crd2) <- askMove
-                playerTurn crd1 crd2 clr brd
-            else movePiece brd crd1 crd2
-        else do 
-            putStrLn "Invalid Move"
-            (crd1,crd2) <- askMove
-            playerTurn crd1 crd2 clr brd
+    if crd1 == (99,99)
+        then kingSideCastle clr brd
+        else if crd1 == (-99,-99)
+            then queenSideCastle clr brd
+            else do
+                newbrd <- movePiece brd crd1 crd2
+                let pieceMoves = case piece of
+                        Pawn -> pawnMoves crd1 clr brd
+                        Knight -> horseMoves crd1 clr brd
+                        Bishop -> bishopmoves crd1 clr brd
+                        Queen -> queenmoves crd1 clr brd
+                        Rook -> rookmoves crd1 clr brd
+                        King -> kingmoves crd1 clr brd
+                if crd2 `elem` pieceMoves        
+                    then if isChecked clr newbrd
+                        then do
+                            putStrLn "Invalid Move, You are in check!"
+                            (crd1,crd2) <- askMove
+                            playerTurn crd1 crd2 clr brd
+                        else movePiece brd crd1 crd2
+                    else do 
+                        putStrLn "Invalid Move"
+                        (crd1,crd2) <- askMove
+                        playerTurn crd1 crd2 clr brd
 
+isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
                         Pawn -> mapM (movePiece brd x) (pawnMoves x clr brd)
@@ -201,3 +221,7 @@ askPromote = do
     if promote `elem` ["q","b","k","r"]
         then return $ strToPiece promote
         else askPromote
+
+kingSideCastle = undefined 
+
+queenSideCastle = undefined
