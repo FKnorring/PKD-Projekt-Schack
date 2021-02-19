@@ -135,13 +135,18 @@ play brd clr = do
             
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
-    if not (isEmpty sqrcord1) && getColor sqrcord1 == clr
-        then validMove clr (getType sqrcord1) crd1 crd2 brd
-        else do 
-                putStrLn $ "No " ++ show clr ++ " piece at coordinate"
-                (crd1,crd2) <- askMove
-                playerTurn crd1 crd2 clr brd
-        where sqrcord1 = getSquare crd1 brd
+    if crd1 == (99,99)
+        then kingSideCastle clr brd
+        else if crd1 == (-99,-99)
+            then queenSideCastle clr brd
+            else do
+                if not (isEmpty sqrcord1) && getColor sqrcord1 == clr
+                    then validMove clr (getType sqrcord1) crd1 crd2 brd
+                    else do 
+                            putStrLn $ "No " ++ show clr ++ " piece at coordinate"
+                            (crd1,crd2) <- askMove
+                            playerTurn crd1 crd2 clr brd
+                    where sqrcord1 = getSquare crd1 brd
 
 
 askMove :: IO (Coordinate, Coordinate)
@@ -163,30 +168,25 @@ validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]] ++ ["O-O","O-O-O"]
 
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
-    if crd1 == (99,99)
-        then kingSideCastle clr brd
-        else if crd1 == (-99,-99)
-            then queenSideCastle clr brd
-            else do
-                newbrd <- movePiece brd crd1 crd2
-                let pieceMoves = case piece of
-                        Pawn -> pawnMoves crd1 clr brd
-                        Knight -> horseMoves crd1 clr brd
-                        Bishop -> bishopmoves crd1 clr brd
-                        Queen -> queenmoves crd1 clr brd
-                        Rook -> rookmoves crd1 clr brd
-                        King -> kingmoves crd1 clr brd
-                if crd2 `elem` pieceMoves        
-                    then if isChecked clr newbrd
-                        then do
-                            putStrLn "Invalid Move, You are in check!"
-                            (crd1,crd2) <- askMove
-                            playerTurn crd1 crd2 clr brd
-                        else movePiece brd crd1 crd2
-                    else do 
-                        putStrLn "Invalid Move"
-                        (crd1,crd2) <- askMove
-                        playerTurn crd1 crd2 clr brd
+        newbrd <- movePiece brd crd1 crd2
+        let pieceMoves = case piece of
+                Pawn -> pawnMoves crd1 clr brd
+                Knight -> horseMoves crd1 clr brd
+                Bishop -> bishopmoves crd1 clr brd
+                Queen -> queenmoves crd1 clr brd
+                Rook -> rookmoves crd1 clr brd
+                King -> kingmoves crd1 clr brd
+        if crd2 `elem` pieceMoves        
+            then if isChecked clr newbrd
+                then do
+                    putStrLn "Invalid Move, You are in check!"
+                    (crd1,crd2) <- askMove
+                    playerTurn crd1 crd2 clr brd
+                else movePiece brd crd1 crd2
+            else do 
+                putStrLn "Invalid Move"
+                (crd1,crd2) <- askMove
+                playerTurn crd1 crd2 clr brd
 
 isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
