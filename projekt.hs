@@ -54,6 +54,11 @@ coordToStr (5,z) = 'f' : show (8 - z)
 coordToStr (6,z) = 'g' : show (8 - z)
 coordToStr (7,z) = 'h' : show (8 - z)
 
+strToPiece :: String -> PType 
+strToPiece "q" = Queen
+strToPiece "b" = Bishop
+strToPiece "k" = Knight
+strToPiece "r" = Rook
 
 {-initBoard
 The chess boards startposition-}
@@ -187,3 +192,12 @@ promote clr brd = do
                                                         Rook -> Piece clr Rook 
                                                         Bishop -> Piece clr Bishop 
                                                         Knight -> Piece clr Knight)
+
+askPromote :: IO PType
+askPromote = do
+    putStrLn "What do you want to promote to?"
+    putStrLn "Write q for queen, b for bishop, k for knight or r for rook"
+    promote <- getLine
+    if promote `elem` ["q","b","k","r"]
+        then return $ strToPiece promote
+        else askPromote
