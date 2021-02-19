@@ -208,8 +208,8 @@ horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+
 getKing :: PColor -> Board -> Coordinate
 getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr King) [(x,y) | x <- [0..7], y <- [0..7]])
 
-isChecked' :: PColor -> Board -> [Coordinate]
-isChecked' clr brd = concatMap (\x -> case getType (getSquare x brd) of 
+possibleMoves :: PColor -> Board -> [Coordinate]
+possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of 
         Pawn -> pawnMoves x clr brd
         Knight -> horseMoves x clr brd
         Bishop -> bishopmoves x clr brd
@@ -219,5 +219,4 @@ isChecked' clr brd = concatMap (\x -> case getType (getSquare x brd) of
         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
 
 isChecked :: PColor -> Board -> Bool
-isChecked clr brd = getKing clr brd `elem` isChecked' (other clr) brd
-
+isChecked clr brd = getKing clr brd `elem` possibleMoves (other clr) brd

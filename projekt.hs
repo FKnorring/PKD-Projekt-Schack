@@ -100,10 +100,20 @@ movePiece board crd1 crd2 = do
 play :: Board -> PColor -> IO ()
 play brd clr = do
     printBoard brd
-    putStrLn (show clr ++ " to play")
-    (crd1,crd2) <- askMove
-    newbrd <- playerTurn crd1 crd2 clr brd
-    play newbrd $ other clr
+    mated <- isMated clr brd
+    if mated
+        then if isChecked clr brd 
+            then do
+            putStrLn (show clr ++ " is mated, the game is over")
+            return ()
+            else do
+            putStrLn "Stalemate, the game is drawn"
+            return ()
+        else do   
+            putStrLn (show clr ++ " to play")
+            (crd1,crd2) <- askMove
+            newbrd <- playerTurn crd1 crd2 clr brd
+            play newbrd $ other clr
 
             
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
@@ -153,4 +163,15 @@ validMove clr piece crd1 crd2 brd = do
             (crd1,crd2) <- askMove
             playerTurn crd1 crd2 clr brd
 
-
+isMated clr brd = do
+            brds <- mapM (\x -> case getType (getSquare x brd) of 
+                        Pawn -> mapM (movePiece brd x) (pawnMoves x clr brd)
+                        Knight -> mapM (movePiece brd x) (horseMoves x clr brd)
+                        Bishop -> mapM (movePiece brd x) (bishopmoves x clr brd)
+                        Queen -> mapM (movePiece brd x) (queenmoves x clr brd)
+                        Rook -> mapM (movePiece brd x) (rookmoves x clr brd)
+                        King -> mapM (movePiece brd x) (kingmoves x clr brd))
+                        $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
+            let allbrds = concat brds
+            return $ not (False `elem` map (isChecked clr) allbrds)
+            
