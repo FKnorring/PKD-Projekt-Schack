@@ -225,3 +225,43 @@ getPromotedPawn :: PColor -> Board -> [Coordinate]
 getPromotedPawn White brd = filter (\x -> getSquare x brd == Piece White Pawn) [(x,y) | x <- [0..7], y <- [0]]
 getPromotedPawn Black brd = filter (\x -> getSquare x brd == Piece Black Pawn) [(x,y) | x <- [0..7], y <- [7]]
 
+clearKSide' :: PColor ->  Board   -> [Square]
+clearKSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [7]] 
+clearKSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [0]] 
+
+
+clearKSide :: PColor -> Board -> Bool
+clearKSide clr brd = (clearKSide' clr brd) == [(Piece clr King),(Empty),(Empty),(Piece clr Rook)]
+
+
+
+clearQSide' :: PColor ->  Board   -> [Square]
+clearQSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [7]] 
+clearQSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [0]] 
+
+
+clearQSide :: PColor -> Board -> Bool
+clearQSide clr brd = (clearQSide' clr brd) == [(Piece clr Rook),(Empty),(Empty),(Empty),(Piece clr King)]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+castleBoard :: Board
+castleBoard = [[Piece Black Rook,Empty,Empty,Empty,Piece Black King,Empty,Empty,Piece Black Rook],
+             [Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn],
+             [Piece White Rook,Empty,Empty,Empty,Piece White King,Empty,Empty,Piece White Rook]]

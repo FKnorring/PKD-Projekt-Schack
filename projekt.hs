@@ -201,3 +201,84 @@ askPromote = do
     if promote `elem` ["q","b","k","r"]
         then return $ strToPiece promote
         else askPromote
+
+
+
+
+kCastle :: PColor -> Board -> IO Board
+kCastle White brd = do 
+    newbrd <-movePiece brd (4,7) (6,7)
+    movePiece newbrd (7,7) (5,7)
+kCastle Black brd = do 
+    newbrd <- movePiece brd (4,0) (6,0)
+    movePiece newbrd (7,0) (5,0)
+
+qCastle :: PColor -> Board -> IO Board
+qCastle White brd = do 
+    newbrd <- movePiece brd (4,7) (2,7)
+    movePiece newbrd (0,7) (3,7)
+qCastle Black brd = do 
+    newbrd <- movePiece brd (4,0) (2,0)
+    movePiece newbrd (0,0) (3,0)
+
+
+canCastleK :: PColor -> Board -> Bool
+canCastleK White brd = not ((5,7) `elem` possibleMoves Black brd) && clearKSide White brd 
+canCastleK Black brd = not ((5,0) `elem` possibleMoves White brd) && clearKSide Black brd 
+
+canCastleQ :: PColor -> Board -> Bool
+canCastleQ White brd = not ((3,7) `elem` possibleMoves Black brd) && clearQSide White brd
+canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide Black brd
+
+castleBoard' = [[Piece Black Rook,Empty,Empty,Empty,Piece Black King,Empty,Empty,Piece Black Rook],
+             [Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece Black Rook,Piece White Pawn,Piece Black Rook,Piece White Pawn,Piece White Pawn],
+             [Piece White Rook,Empty,Empty,Empty,Piece White King,Empty,Empty,Piece White Rook]]
+
+kingSideCastle :: PColor -> Board -> IO Board
+kingSideCastle clr brd = do
+    if isChecked clr brd 
+        then do
+            putStrLn "You cant castle, you are in check "
+            (cord1,cord2) <- askMove
+            playerTurn cord1 cord2 clr brd 
+        else 
+            if canCastleK clr brd 
+                then do
+                    newbrd <- kCastle clr brd 
+                    if isChecked clr newbrd 
+                        then do
+                            putStrLn "You cant castle, you will be in check "
+                            (cord1,cord2) <- askMove
+                            playerTurn cord1 cord2 clr brd
+                        else return newbrd 
+                else do
+                        putStrLn "You cant castle, castling is blocked "
+                        (cord1,cord2) <- askMove
+                        playerTurn cord1 cord2 clr brd
+
+queenSideCastle :: PColor -> Board -> IO Board
+queenSideCastle clr brd = do
+    if isChecked clr brd 
+        then do
+            putStrLn "You cant castle, you are in check "
+            (cord1,cord2) <- askMove
+            playerTurn cord1 cord2 clr brd 
+        else 
+            if canCastleQ clr brd 
+                then do
+                    newbrd <- qCastle clr brd 
+                    if isChecked clr newbrd 
+                        then do
+                            putStrLn "You cant castle, you will be in check "
+                            (cord1,cord2) <- askMove
+                            playerTurn cord1 cord2 clr brd
+                        else return newbrd
+                else do
+                        putStrLn "You cant castle, castling is blocked "
+                        (cord1,cord2) <- askMove
+                        playerTurn cord1 cord2 clr brd
