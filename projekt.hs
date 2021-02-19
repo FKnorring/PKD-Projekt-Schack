@@ -91,11 +91,11 @@ printBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬�
 printBoard' x y []           =  "   a  b  c  d  e  f  g  h"
 
 printBlackBoard' :: Int -> Int -> Board -> String 
-printBlackBoard' 1 8 ((a:xs):xss) = printBlackBoard' 2 8 (xs:xss) ++ ("║" ++ show a++" ║ 8" ++  "\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n   h  g  f  e  d  c  b  a\n") 
-printBlackBoard' 1 y ((a:xs):xss) = printBlackBoard' 2 y (xs:xss) ++ ("║"++show a++" ║ "++show y)                       
+printBlackBoard' 1 8 ((a:xs):xss) = printBlackBoard' 2 8 (xs:xss) ++ ("║" ++ show a++" ║" ++  "\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n    h  g  f  e  d  c  b  a\n") 
+printBlackBoard' 1 y ((a:xs):xss) = printBlackBoard' 2 y (xs:xss) ++ ("║"++show a++" ║ ")                       
 printBlackBoard' x y ((a:xs):xss) = printBlackBoard' (x+1) y (xs:xss) ++ ("║"++show a++" ")                                
-printBlackBoard' _ 1 ([]:xs)      = printBlackBoard' 1 1 xs ++ "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n  "               
-printBlackBoard' x y ([]:xs)      = printBlackBoard' 1 (y-1) xs ++ "\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n  "            
+printBlackBoard' _ 1 ([]:xs)      = printBlackBoard' 1 1 xs ++ "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n1 "               
+printBlackBoard' x y ([]:xs)      = printBlackBoard' 1 (y-1) xs ++ "\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n" ++ show y ++ " "           
 printBlackBoard' x y []           =  ""
 
 
@@ -115,7 +115,7 @@ movePiece board crd1 crd2 = do
 
 play :: Board -> PColor -> IO ()
 play brd clr = do
-    printBoard White brd
+    printBoard clr brd
     mated <- isMated clr brd
     if mated
         then if isChecked clr brd 
