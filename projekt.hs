@@ -113,7 +113,8 @@ play brd clr = do
             putStrLn (show clr ++ " to play")
             (crd1,crd2) <- askMove
             newbrd <- playerTurn crd1 crd2 clr brd
-            play newbrd $ other clr
+            newbrd' <- promote clr newbrd
+            play newbrd' $ other clr
 
             
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
@@ -174,4 +175,15 @@ isMated clr brd = do
                         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
             let allbrds = concat brds
             return $ not (False `elem` map (isChecked clr) allbrds)
-            
+
+promote :: PColor -> Board -> IO Board 
+promote clr brd = do
+            if null (getPromotedPawn clr brd)
+                then return brd
+                else do 
+                    piece <- askPromote
+                    return $ changeSquare (head (getPromotedPawn clr brd)) brd (case piece of
+                                                        Queen -> Piece clr Queen 
+                                                        Rook -> Piece clr Rook 
+                                                        Bishop -> Piece clr Bishop 
+                                                        Knight -> Piece clr Knight)

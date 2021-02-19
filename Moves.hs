@@ -220,3 +220,8 @@ possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of
 
 isChecked :: PColor -> Board -> Bool
 isChecked clr brd = getKing clr brd `elem` possibleMoves (other clr) brd
+
+getPromotedPawn :: PColor -> Board -> [Coordinate]
+getPromotedPawn White brd = filter (\x -> getSquare x brd == Piece White Pawn) [(x,y) | x <- [0..7], y <- [0]]
+getPromotedPawn Black brd = filter (\x -> getSquare x brd == Piece Black Pawn) [(x,y) | x <- [0..7], y <- [7]]
+
