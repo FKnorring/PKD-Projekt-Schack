@@ -9,15 +9,25 @@ pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 pawnMoves (x,6) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
     (pawnMoves' (x,6) White) ++ if isEmpty (getSquare (x, 5) brd) then (x,5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)]) else []
-pawnMoves (x,y) White brd = filter 
+pawnMoves (x,y) White brd = enPassantSquare (x,y) White brd ++ filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
     (pawnMoves' (x,y) White)  ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
 pawnMoves (x,1) Black brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
     (pawnMoves' (x,1) Black) ++ if isEmpty (getSquare (x, 2) brd) then (x,2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)]) else []
-pawnMoves (x,y) Black brd = filter 
+pawnMoves (x,y) Black brd = enPassantSquare (x,y) Black brd ++ filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
     (pawnMoves' (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)]
+
+enPassantSquare :: Coordinate -> PColor -> Board -> [Coordinate]
+enPassantSquare (x,y) White brd 
+    | getSquare (x+1,y) brd == Piece Black (Pawn DoubleMove) = [(x+1,y-1)]
+    | getSquare (x-1,y) brd == Piece Black (Pawn DoubleMove) = [(x-1,y-1)]
+    | otherwise = []
+enPassantSquare (x,y) Black brd 
+    | getSquare (x+1,y) brd == Piece White (Pawn DoubleMove) = [(x+1,y+1)]
+    | getSquare (x-1,y) brd == Piece White (Pawn DoubleMove) = [(x-1,y+1)]
+    | otherwise = []
 
 pawnMoves' :: Coordinate -> PColor -> [Coordinate]
 pawnMoves' (x,y) White = validSquares [(x+1,y-1),(x-1,y-1)]
