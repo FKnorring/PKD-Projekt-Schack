@@ -13,25 +13,28 @@ type Coordinate = (Int, Int)
 
 {-data PType represents the different piece types-}
 
-data PType = Bishop | Pawn | Rook | Knight | King | Queen deriving (Eq)
+data PType = Bishop | Pawn Move | Rook Moved | Knight | King Moved | Queen deriving (Eq)
 
+data Move = DoubleMove | SingleMove
+
+data Moved = Moved | Unmoved
 
 {- data PColor represent the pieces color-}
 data PColor = White | Black | Null deriving (Eq, Show)
 
 instance Show Square where
     show Empty = " "
-    show (Piece White Pawn) = "♙"
+    show (Piece White (Pawn _)) = "♙"
     show (Piece White Bishop) = "♗"
-    show (Piece White Rook) = "♖"
+    show (Piece White (Rook _)) = "♖"
     show (Piece White Knight) = "♘"
-    show (Piece White King) = "♔"
+    show (Piece White (King _)) = "♔"
     show (Piece White Queen) = "♕"
-    show (Piece Black Pawn) = "♟"
+    show (Piece Black (Pawn _)) = "♟"
     show (Piece Black Bishop) = "♝"
-    show (Piece Black Rook) = "♜"
+    show (Piece Black (Rook _)) = "♜"
     show (Piece Black Knight) = "♞"
-    show (Piece Black King) = "♚"
+    show (Piece Black (King _)) = "♚"
     show (Piece Black Queen) = "♛"
     
 
