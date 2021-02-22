@@ -61,19 +61,19 @@ strToPiece :: String -> PType
 strToPiece "q" = Queen
 strToPiece "b" = Bishop
 strToPiece "k" = Knight
-strToPiece "r" = Rook
+strToPiece "r" = Rook Moved
 
 {-initBoard
 The chess boards startposition-}
 initBoard :: Board
-initBoard = [[Piece Black Rook,Piece Black Knight,Piece Black Bishop,Piece Black Queen,Piece Black King,Piece Black Bishop,Piece Black Knight,Piece Black Rook],
-             [Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn],
+initBoard = [[Piece Black (Rook Unmoved ),Piece Black Knight,Piece Black Bishop,Piece Black Queen,Piece Black (King Unmoved),Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],
+             [Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove )],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn],
-             [Piece White Rook,Piece White Knight,Piece White Bishop,Piece White Queen,Piece White King,Piece White Bishop,Piece White Knight,Piece White Rook]]
+             [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
+             [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 {-printBoard
 a function that prints the current board to the terminal
@@ -178,12 +178,12 @@ validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board
 validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2
         let pieceMoves = case piece of
-                Pawn -> pawnMoves crd1 clr brd
+                (Pawn _) -> pawnMoves crd1 clr brd
                 Knight -> horseMoves crd1 clr brd
                 Bishop -> bishopmoves crd1 clr brd
                 Queen -> queenmoves crd1 clr brd
-                Rook -> rookmoves crd1 clr brd
-                King -> kingmoves crd1 clr brd
+                (Rook _) -> rookmoves crd1 clr brd
+                (King _) -> kingmoves crd1 clr brd
         if crd2 `elem` pieceMoves        
             then if isChecked clr newbrd
                 then do
@@ -197,12 +197,12 @@ validMove clr piece crd1 crd2 brd = do
 isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
-                        Pawn -> mapM (movePiece brd x) (pawnMoves x clr brd)
+                        (Pawn _) -> mapM (movePiece brd x) (pawnMoves x clr brd)
                         Knight -> mapM (movePiece brd x) (horseMoves x clr brd)
                         Bishop -> mapM (movePiece brd x) (bishopmoves x clr brd)
                         Queen -> mapM (movePiece brd x) (queenmoves x clr brd)
-                        Rook -> mapM (movePiece brd x) (rookmoves x clr brd)
-                        King -> mapM (movePiece brd x) (kingmoves x clr brd))
+                        (Rook _) -> mapM (movePiece brd x) (rookmoves x clr brd)
+                        (King _) -> mapM (movePiece brd x) (kingmoves x clr brd))
                         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
             let allbrds = concat brds
             return $ not (False `elem` map (isChecked clr) allbrds)
@@ -215,7 +215,7 @@ promote clr brd = do
                     piece <- askPromote
                     return $ changeSquare (head (getPromotedPawn clr brd)) brd (case piece of
                                                         Queen -> Piece clr Queen 
-                                                        Rook -> Piece clr Rook 
+                                                        (Rook _) -> Piece clr (Rook Moved) 
                                                         Bishop -> Piece clr Bishop 
                                                         Knight -> Piece clr Knight)
 
@@ -255,15 +255,6 @@ canCastleK Black brd = not ((5,0) `elem` possibleMoves White brd) && clearKSide 
 canCastleQ :: PColor -> Board -> Bool
 canCastleQ White brd = not ((3,7) `elem` possibleMoves Black brd) && clearQSide White brd
 canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide Black brd
-
-castleBoard' = [[Piece Black Rook,Empty,Empty,Empty,Piece Black King,Empty,Empty,Piece Black Rook],
-             [Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn],
-             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece Black Rook,Piece White Pawn,Piece Black Rook,Piece White Pawn,Piece White Pawn],
-             [Piece White Rook,Empty,Empty,Empty,Piece White King,Empty,Empty,Piece White Rook]]
 
 kingSideCastle :: PColor -> Board -> IO Board
 kingSideCastle clr brd = do

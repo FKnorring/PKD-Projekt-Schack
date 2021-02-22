@@ -1,4 +1,4 @@
-module Board (Board, Square(..), PType(..), PColor(..), Coordinate, isEmpty, getColor, getSquare, other, getType) where
+module Board where
 
 type Board = [[Square]]
 
@@ -15,9 +15,9 @@ type Coordinate = (Int, Int)
 
 data PType = Bishop | Pawn Move | Rook Moved | Knight | King Moved | Queen deriving (Eq)
 
-data Move = DoubleMove | SingleMove
+data Move = DoubleMove | SingleMove deriving (Eq)
 
-data Moved = Moved | Unmoved
+data Moved = Moved | Unmoved deriving (Eq)
 
 {- data PColor represent the pieces color-}
 data PColor = White | Black | Null deriving (Eq, Show)
@@ -45,14 +45,14 @@ isEmpty _ = False
 getColor :: Square -> PColor
 getColor (Piece White _) = White
 getColor (Piece Black _) = Black
-getColor (Empty) = Null
+getColor Empty = Null
 
 getType :: Square -> PType
-getType (Piece _ Pawn) = Pawn
+getType (Piece _ (Pawn move)) = Pawn move
 getType (Piece _ Knight) = Knight
 getType (Piece _ Bishop) = Bishop
-getType (Piece _ Rook) = Rook
-getType (Piece _ King) = King
+getType (Piece _ (Rook moved)) = Rook moved
+getType (Piece _ (King moved)) = King moved
 getType (Piece _ Queen) = Queen
 
 getSquare :: Coordinate -> Board -> Square

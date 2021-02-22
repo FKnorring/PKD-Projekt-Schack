@@ -201,24 +201,24 @@ horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+
 --OpPieces :: Board -> [Coordinate]
 
 getKing :: PColor -> Board -> Coordinate
-getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr King) [(x,y) | x <- [0..7], y <- [0..7]])
+getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr (King Moved) || getSquare x brd == Piece clr (King Unmoved)) [(x,y) | x <- [0..7], y <- [0..7]])
 
 possibleMoves :: PColor -> Board -> [Coordinate]
 possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of 
-        Pawn -> pawnMoves x clr brd
+        (Pawn _) -> pawnMoves x clr brd
         Knight -> horseMoves x clr brd
         Bishop -> bishopmoves x clr brd
         Queen -> queenmoves x clr brd
-        Rook -> rookmoves x clr brd
-        King -> kingmoves x clr brd)
+        (Rook _) -> rookmoves x clr brd
+        (King _) -> kingmoves x clr brd)
         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
 
 isChecked :: PColor -> Board -> Bool
 isChecked clr brd = getKing clr brd `elem` possibleMoves (other clr) brd
 
 getPromotedPawn :: PColor -> Board -> [Coordinate]
-getPromotedPawn White brd = filter (\x -> getSquare x brd == Piece White Pawn) [(x,y) | x <- [0..7], y <- [0]]
-getPromotedPawn Black brd = filter (\x -> getSquare x brd == Piece Black Pawn) [(x,y) | x <- [0..7], y <- [7]]
+getPromotedPawn White brd = filter (\x -> getSquare x brd == Piece White (Pawn SingleMove)) [(x,y) | x <- [0..7], y <- [0]]
+getPromotedPawn Black brd = filter (\x -> getSquare x brd == Piece Black (Pawn SingleMove)) [(x,y) | x <- [0..7], y <- [7]]
 
 clearKSide' :: PColor ->  Board   -> [Square]
 clearKSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [7]] 
@@ -226,7 +226,7 @@ clearKSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [
 
 
 clearKSide :: PColor -> Board -> Bool
-clearKSide clr brd = (clearKSide' clr brd) == [(Piece clr King),(Empty),(Empty),(Piece clr Rook)]
+clearKSide clr brd = (clearKSide' clr brd) == [(Piece clr (King Unmoved)),(Empty),(Empty),(Piece clr (Rook Unmoved))]
 
 
 
@@ -236,15 +236,15 @@ clearQSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [
 
 
 clearQSide :: PColor -> Board -> Bool
-clearQSide clr brd = (clearQSide' clr brd) == [(Piece clr Rook),(Empty),(Empty),(Empty),(Piece clr King)]
+clearQSide clr brd = (clearQSide' clr brd) == [(Piece clr (Rook Unmoved)),(Empty),(Empty),(Empty),(Piece clr (King Unmoved))]
 
 
 castleBoard :: Board
-castleBoard = [[Piece Black Rook,Empty,Empty,Empty,Piece Black King,Empty,Empty,Piece Black Rook],
-             [Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn,Piece Black Pawn],
+castleBoard = [[Piece Black (Rook Unmoved),Empty,Empty,Empty,Piece Black (King Unmoved),Empty,Empty,Piece Black (Rook Unmoved)],
+             [Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove)],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn,Piece White Pawn],
-             [Piece White Rook,Empty,Empty,Empty,Piece White King,Empty,Empty,Piece White Rook]]
+             [Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove)],
+             [Piece White (Rook Unmoved),Empty,Empty,Empty,Piece White (King Unmoved),Empty,Empty,Piece White (Rook Unmoved)]]
