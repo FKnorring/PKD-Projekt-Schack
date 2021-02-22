@@ -114,7 +114,10 @@ movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
         newboard = changeSquare crd1 board Empty
-    return $ changeSquare crd2 newboard piece
+    return $ changeSquare crd2 newboard case piece of
+        Rook Unmoved -> Rook Moved
+        King Unmoved -> King Moved
+        _ -> piece
 
 play :: Board -> PColor -> IO ()
 play brd clr = do
