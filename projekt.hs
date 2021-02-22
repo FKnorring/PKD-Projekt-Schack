@@ -86,9 +86,9 @@ printBoard clr brd = putStrLn (case clr of
 {-printWhiteBoard'
 a function that makes a list of squares to a playable board-}
 printWhiteBoard' :: Int -> Int -> Board -> String 
-printWhiteBoard' 1 8 ((a:xs):xss) = ("  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" ") ++ printWhiteBoard' 2 8 (xs:xss)
-printWhiteBoard' 1 y ((a:xs):xss) = (show y++" ║"++show a++" ")                       ++ printWhiteBoard' 2 y (xs:xss)
-printWhiteBoard' x y ((a:xs):xss) = ("║"++show a++" ")                                ++ printWhiteBoard' (x+1) y (xs:xss)
+printWhiteBoard' 1 8 ((a:xs):xss) = "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" "   ++ printWhiteBoard' 2 8 (xs:xss)
+printWhiteBoard' 1 y ((a:xs):xss) = show y++" ║"++show a++" "                         ++ printWhiteBoard' 2 y (xs:xss)
+printWhiteBoard' x y ((a:xs):xss) =  "║" ++ show a ++" "                              ++ printWhiteBoard' (x+1) y (xs:xss)
 printWhiteBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n"               ++ printWhiteBoard' 1 1 xs
 printWhiteBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printWhiteBoard' 1 (y-1) xs
 printWhiteBoard' x y []           =  "   a  b  c  d  e  f  g  h"
