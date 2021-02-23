@@ -130,21 +130,26 @@ movePiece board crd1 crd2 = do
                         Piece clr (King Unmoved) -> Piece clr (King Moved)
                         Piece clr (Pawn SingleMove) -> if abs (snd crd1 - snd crd2) == 2
                                                             then Piece clr (Pawn DoubleMove)
-                                                            else piece
+                                                            else Piece clr (Pawn SingleMove)
                         _ -> piece)
 
 removeDoublePawn :: PColor -> Board -> Board 
 removeDoublePawn clr brd = changeSquare doublepawn brd Empty
-    where doublepawn = head $ filter (\x -> getSquare x brd == Piece (other clr) (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]]
+    where doublepawn = head $ filter (\x -> getSquare x brd == Piece (other clr) (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
 
 
 resetDoubleMove :: PColor -> Board -> Board 
 resetDoubleMove clr brd = changeSquare doublepawn brd (Piece clr (Pawn SingleMove))
-    where doublepawn = filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]]
+    where doublepawn = head $ filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
+
+checkDP :: PColor -> Board -> Board 
+checkDP clr brd = if filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] == [] 
+                     then brd 
+                     else resetDoubleMove clr brd  
 
 play :: Board -> PColor -> IO ()
 play brd clr = do
-    let brd' = resetDoubleMove clr brd
+    let brd' = checkDP clr brd
     printBoard clr brd
     mated <- isMated clr brd
     if mated
