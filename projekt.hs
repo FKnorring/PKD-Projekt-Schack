@@ -110,19 +110,18 @@ changeSquare' :: Int -> [Square] -> Square -> [Square]
 changeSquare' 0 (a:xs) square = square:xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 
-enPassant :: PColor -> Board -> Coordinate -> Bool
-enPassant clr brd crd = isEmpty (getSquare crd brd) && (front || back)
-    where front = getSquare (fst crd,snd crd - 1) brd == Piece (other clr) (Pawn DoubleMove)
-          back = getSquare (fst crd,snd crd + 1) brd == Piece (other clr) (Pawn DoubleMove)
+enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
+enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) && getSquare crd1 brd /= (Piece clr (Pawn DoubleMove ))
+    where front = getSquare (fst crd2,snd crd2 - 1) brd == Piece (other clr) (Pawn DoubleMove)
+          back = getSquare (fst crd2,snd crd2 + 1) brd == Piece (other clr) (Pawn DoubleMove)
 
   
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
-        target = getSquare crd2 board
         clr = getColor piece 
         newboard = changeSquare crd1 board Empty
-    if enPassant clr board crd2
+    if enPassant clr board crd1 crd2
         then do
             return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
         else return $ changeSquare crd2 newboard (case piece of
@@ -139,21 +138,21 @@ removeDoublePawn clr brd = changeSquare doublepawn brd Empty
 
 
 resetDoubleMove :: PColor -> Board -> Board 
-resetDoubleMove clr brd = changeSquare doublepawn brd (Piece clr (Pawn SingleMove))
-    where doublepawn = head $ filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
+resetDoubleMove clr brd = changeSquare doublepawn brd (Piece (other clr) (Pawn SingleMove))
+    where doublepawn = head $ filter (\x -> getSquare x brd == Piece (other clr) (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
 
 checkDP :: PColor -> Board -> Board 
-checkDP clr brd = if filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] == [] 
+checkDP clr brd = if filter (\x -> getSquare x brd == Piece (other clr) (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] == [] 
                      then brd 
                      else resetDoubleMove clr brd  
 
 play :: Board -> PColor -> IO ()
 play brd clr = do
     let brd' = checkDP clr brd
-    printBoard clr brd
-    mated <- isMated clr brd
+    printBoard clr brd'
+    mated <- isMated clr brd'
     if mated
-        then if isChecked clr brd 
+        then if isChecked clr brd' 
             then do
             putStrLn (show clr ++ " is mated, the game is over")
             return ()
