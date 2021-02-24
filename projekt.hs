@@ -337,18 +337,18 @@ testBoard = [[Piece White (Pawn SingleMove),Piece Black Knight,Piece Black Bisho
 
 performTests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16]
 
-test1 = TestCase $ assertEqual "isChecked White initBoard " False (isChecked White initBoard)
-test2 = TestCase $ assertEqual "isChecked White testBoard" True (isChecked White testBoard)
+test1 = TestCase $ assertEqual "Looks if the safe Black king is in check on startboard" False (isChecked White initBoard)
+test2 = TestCase $ assertEqual "Looks if the white king is in check on testboard" True (isChecked White testBoard)
 
-test3 = TestCase $ assertEqual "isChecked Black testBoard" False (isChecked Black testBoard)
+test3 = TestCase $ assertEqual "Looks if the safe Black king is safe on testBoard" False (isChecked Black testBoard)
 
-test4 = TestCase $ assertEqual "canCastleK White initBoard " False (canCastleK White initBoard)
+test4 = TestCase $ assertEqual "looks if squares is empty between king and rook, kingside for white  " False (canCastleK White initBoard)
 
-test5 = TestCase $ assertEqual "canCastleK Black castleBoard " True (canCastleK Black castleBoard )
+test5 = TestCase $ assertEqual "looks if squares is empty between king and rook, kingside for Black " True (canCastleK Black castleBoard )
 
-test6 = TestCase $ assertEqual "canCastleq White castleBoard " True (canCastleQ White castleBoard)
+test6 = TestCase $ assertEqual "looks if squares is empty between king and rook, queenside for White " True (canCastleQ White castleBoard)
 
-test7 = TestCase $ assertEqual "possibleMoves White initBoard" [(0,5),(0,4),(1,5),(1,4),(2,5),(0,5),(2,5),(2,4),(3,5),(3,4),(4,5),(4,4),(5,5),(5,4),(6,5),(6,4),(7,5),(5,5),(7,5),(7,4)](possibleMoves White initBoard)
+test7 = TestCase $ assertEqual "all possible moves for white at the start" [(0,5),(0,4),(1,5),(1,4),(2,5),(0,5),(2,5),(2,4),(3,5),(3,4),(4,5),(4,4),(5,5),(5,4),(6,5),(6,4),(7,5),(5,5),(7,5),(7,4)](possibleMoves White initBoard)
 
 test8 = TestCase $ assertEqual "Checks if pawnMoves function finds all possible moves for the white pawn at coordinate (0,6)" [(0,5),(0,4)] (pawnMoves (0,6) White initBoard)
 
