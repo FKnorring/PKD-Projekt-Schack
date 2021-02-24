@@ -1,19 +1,45 @@
 module Moves where
 import Board
 
+
+validSquares :: [Coordinate] -> [Coordinate]
+validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
+
 pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 pawnMoves (x,6) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
     (pawnMoves' (x,6) White) ++ if isEmpty (getSquare (x, 5) brd) then (x,5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)]) else []
-pawnMoves (x,y) White brd = filter 
+pawnMoves (x,y) White brd = enPassantSquare (x,y) White brd ++ filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
     (pawnMoves' (x,y) White)  ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
 pawnMoves (x,1) Black brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
     (pawnMoves' (x,1) Black) ++ if isEmpty (getSquare (x, 2) brd) then (x,2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)]) else []
-pawnMoves (x,y) Black brd = filter 
+pawnMoves (x,y) Black brd = enPassantSquare (x,y) Black brd ++ filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
-    (pawnMoves' (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)]
+    (pawnMoves' (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)] ++ enPassantSquare (x,y) Black brd
+
+enPassantSquare :: Coordinate -> PColor -> Board -> [Coordinate]
+enPassantSquare (7,y) White brd 
+    | getSquare (6,y) brd == Piece Black (Pawn DoubleMove) = [(6,y-1)]
+    | otherwise = []
+enPassantSquare (0,y) White brd 
+    | getSquare (1,y) brd == Piece Black (Pawn DoubleMove) = [(1,y-1)]
+    | otherwise = []
+enPassantSquare (x,y) White brd 
+    | getSquare (x+1,y) brd == Piece Black (Pawn DoubleMove) = [(x+1,y-1)]
+    | getSquare (x-1,y) brd == Piece Black (Pawn DoubleMove) = [(x-1,y-1)]
+    | otherwise = []
+enPassantSquare (7,y) Black brd 
+    | getSquare (6,y) brd == Piece White (Pawn DoubleMove) = [(6,y+1)]
+    | otherwise = []
+enPassantSquare (0,y) Black brd 
+    | getSquare (1,y) brd == Piece White (Pawn DoubleMove) = [(1,y+1)]
+    | otherwise = []
+enPassantSquare (x,y) Black brd 
+    | getSquare (x+1,y) brd == Piece White (Pawn DoubleMove) = [(x+1,y+1)]
+    | getSquare (x-1,y) brd == Piece White (Pawn DoubleMove) = [(x-1,y+1)]
+    | otherwise = []
 
 pawnMoves' :: Coordinate -> PColor -> [Coordinate]
 pawnMoves' (x,y) White = validSquares [(x+1,y-1),(x-1,y-1)]
@@ -178,30 +204,21 @@ queenmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
 
 kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-kingmoves (x,y) White brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) (kingmoves' (x,y))
-kingmoves (x,y) Black brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) (kingmoves' (x,y))
-
+kingmoves (x,y) clr brd = filter 
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y))
 
 
 kingmoves' :: Coordinate -> [Coordinate]
 kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
 
-validSquares :: [Coordinate] -> [Coordinate]
-validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
-
 horseMoves :: Coordinate -> PColor -> Board -> [Coordinate]
-horseMoves (x,y) White brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= White) (horseMoves' (x,y))
-horseMoves (x,y) Black brd = filter 
-   (\x ->  (isEmpty (getSquare x brd)) || getColor (getSquare x brd) /= Black) (horseMoves' (x,y))
+horseMoves (x,y) clr brd = filter 
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (horseMoves' (x,y))
 
 
 horseMoves' :: Coordinate -> [Coordinate]
 horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
-
 
 --OpPieces :: Board -> [Coordinate]
 
@@ -210,7 +227,7 @@ getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr (King Moved) 
 
 possibleMoves :: PColor -> Board -> [Coordinate]
 possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of 
-        (Pawn Sing) -> pawnMoves x clr brd
+        (Pawn _) -> pawnMoves x clr brd
         Knight -> horseMoves x clr brd
         Bishop -> bishopmoves x clr brd
         Queen -> queenmoves x clr brd
