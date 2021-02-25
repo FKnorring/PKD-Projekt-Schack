@@ -2,17 +2,6 @@ import Board
 import Moves
 import Debug.Trace
 
-<<<<<<< Updated upstream
-data Either a b = Left a | Right b 
-data Exception = OutofBounds
-
-type Exceptional a = Main.Either Exception a
-
-throw :: Exception -> Exceptional a 
-throw x = Main.Left x
-
-=======
->>>>>>> Stashed changes
 main :: IO () 
 main = play initBoard White 
 {-strToCoord str
