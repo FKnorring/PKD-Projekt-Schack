@@ -130,6 +130,7 @@ movePiece board crd1 crd2 = do
                         Piece clr (Pawn SingleMove) -> if abs (snd crd1 - snd crd2) == 2
                                                             then Piece clr (Pawn DoubleMove)
                                                             else Piece clr (Pawn SingleMove)
+                        Piece clr (Pawn DoubleMove) -> Piece clr (Pawn SingleMove)
                         _ -> piece)
 
 removeDoublePawn :: PColor -> Board -> Board 
