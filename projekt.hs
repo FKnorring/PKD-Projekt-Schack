@@ -118,7 +118,6 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
-        target = getSquare crd2 board
         clr = getColor piece 
         newboard = changeSquare crd1 board Empty
     if enPassant clr board crd1 crd2
@@ -364,7 +363,7 @@ test7 = TestCase $ assertEqual "all possible moves for white at the start" [(0,5
 
 test8 = TestCase $ assertEqual "Checks if pawnMoves function finds all possible moves for the white pawn at coordinate (0,6)" [(0,5),(0,4)] (pawnMoves (0,6) White initBoard)
 
-test9 = TestCase $ assertEqual "checks if promotedPawn function finds the correct promotedPawn on the testBoard" [(0,0)] (getPromotedPawn White testBoard)
+test9 = TestCase $ assertEqual "checks if promotedPawn function finds the correct promotedPawn on the testBoard" [] (getPromotedPawn White testBoard)
 
 test10 = TestCase $ assertEqual "checks if promotedPawn function finds the correct promotedPawn on the testBoard" [] (getPromotedPawn Black testBoard)
 
