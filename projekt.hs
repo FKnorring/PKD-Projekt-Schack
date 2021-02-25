@@ -119,12 +119,10 @@ movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
         clr = getColor piece 
-        newboard = changeSquare crd1 board Empty
     if enPassant clr board crd1 crd2
         then do
             return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
         else return $ changeSquare crd2 newboard (case piece of
-                        Piece clr (Pawn DoubleMove) -> Piece clr (Pawn SingleMove)
                         Piece clr (Rook Unmoved) -> Piece clr (Rook Moved)
                         Piece clr (King Unmoved) -> Piece clr (King Moved)
                         Piece clr (Pawn SingleMove) -> if abs (snd crd1 - snd crd2) == 2
