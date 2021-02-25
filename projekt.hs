@@ -2,6 +2,7 @@ import Board
 import Moves
 import Debug.Trace
 
+<<<<<<< Updated upstream
 data Either a b = Left a | Right b 
 data Exception = OutofBounds
 
@@ -10,6 +11,8 @@ type Exceptional a = Main.Either Exception a
 throw :: Exception -> Exceptional a 
 throw x = Main.Left x
 
+=======
+>>>>>>> Stashed changes
 main :: IO () 
 main = play initBoard White 
 {-strToCoord str
@@ -110,10 +113,14 @@ changeSquare' :: Int -> [Square] -> Square -> [Square]
 changeSquare' 0 (a:xs) square = square:xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 
-enPassant :: PColor -> Board -> Coordinate -> Bool
-enPassant clr brd crd = isEmpty (getSquare crd brd) && (front || back)
-    where front = getSquare (fst crd,snd crd - 1) brd == Piece (other clr) (Pawn DoubleMove)
-          back = getSquare (fst crd,snd crd + 1) brd == Piece (other clr) (Pawn DoubleMove)
+enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
+enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) && getSquare crd1 brd /= (Piece clr (Pawn DoubleMove ))
+    where front = case snd crd2 of
+              0 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
+              _ -> getSquare (fst crd2,snd crd2 - 1) brd == Piece (other clr) (Pawn DoubleMove)
+          back = case snd crd2 of
+              7 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
+              _ -> getSquare (fst crd2,snd crd2 + 1) brd == Piece (other clr) (Pawn DoubleMove)
 
   
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
@@ -122,7 +129,7 @@ movePiece board crd1 crd2 = do
         target = getSquare crd2 board
         clr = getColor piece 
         newboard = changeSquare crd1 board Empty
-    if enPassant clr board crd2
+    if enPassant clr board crd1 crd2
         then do
             return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
         else return $ changeSquare crd2 newboard (case piece of
@@ -139,8 +146,8 @@ removeDoublePawn clr brd = changeSquare doublepawn brd Empty
 
 
 resetDoubleMove :: PColor -> Board -> Board 
-resetDoubleMove clr brd = changeSquare doublepawn brd (Piece clr (Pawn SingleMove))
-    where doublepawn = head $ filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
+resetDoubleMove clr brd = changeSquare doublepawn brd (Piece (other clr) (Pawn SingleMove))
+    where doublepawn = head $ filter (\x -> getSquare x brd == Piece (other clr) (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
 
 checkDP :: PColor -> Board -> Board 
 checkDP clr brd = if filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] == [] 
@@ -328,3 +335,14 @@ queenSideCastle clr brd = do
                         putStrLn "You cant castle, castling is blocked "
                         (cord1,cord2) <- askMove
                         playerTurn cord1 cord2 clr brd
+
+testBoard :: Board
+testBoard = [[Empty,Piece Black Knight,Piece Black Bishop,Piece Black (King Unmoved),Piece Black Queen ,Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],
+             [Piece White (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),(Empty),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Piece White (Pawn SingleMove),Piece Black (Pawn DoubleMove)],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),(Empty),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
+             [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
+
