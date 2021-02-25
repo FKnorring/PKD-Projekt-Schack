@@ -2,6 +2,7 @@ import Board
 import Moves
 import Debug.Trace
 
+
 import Test.HUnit
 
 main :: IO () 
@@ -110,7 +111,7 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
               0 -> getSquare (fst crd2,snd crd2) brd == Piece (other clr) (Pawn DoubleMove)
               _ -> getSquare (fst crd2,snd crd2 - 1) brd == Piece (other clr) (Pawn DoubleMove)
           back = case snd crd2 of
-              7 -> getSquare (fst crd2,snd crd2) brd == Piece (other clr) (Pawn DoubleMove)
+              7 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
               _ -> getSquare (fst crd2,snd crd2 + 1) brd == Piece (other clr) (Pawn DoubleMove)
 
   
@@ -118,8 +119,7 @@ movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
         clr = getColor piece 
-        newboard = changeSquare crd1 board Empty
-    if trace (show (enPassant clr board crd1 crd2)) enPassant clr board crd1 crd2
+    if enPassant clr board crd1 crd2
         then do
             return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
         else return $ changeSquare crd2 newboard (case piece of
@@ -136,7 +136,7 @@ removeDoublePawn clr brd = changeSquare doublepawn brd Empty
 
 
 resetDoubleMove :: PColor -> Board -> Board 
-resetDoubleMove clr brd = changeSquare doublepawn brd (Piece clr (Pawn SingleMove))
+resetDoubleMove clr brd = changeSquare doublepawn brd (Piece (other clr) (Pawn SingleMove))
     where doublepawn = head $ filter (\x -> getSquare x brd == Piece (other clr) (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
 
 checkDP :: PColor -> Board -> Board 
@@ -327,8 +327,8 @@ queenSideCastle clr brd = do
                         playerTurn cord1 cord2 clr brd
 
 testBoard :: Board
-testBoard = [[Piece White (Pawn SingleMove),Piece Black Knight,Piece Black Bishop,Piece Black (King Unmoved),Piece Black Queen ,Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],
-             [Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),(Empty),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
+testBoard = [[Empty,Piece Black Knight,Piece Black Bishop,Piece Black (King Unmoved),Piece Black Queen ,Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],
+             [Piece White (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),(Empty),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Piece White (Pawn SingleMove),Piece Black (Pawn DoubleMove)],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
