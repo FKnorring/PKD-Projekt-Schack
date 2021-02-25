@@ -337,6 +337,15 @@ testBoard = [[Piece White (Pawn SingleMove),Piece Black Knight,Piece Black Bisho
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 
+testBoard' :: Board
+testBoard' = [[Empty,Piece Black Knight,Piece Black Bishop,Piece Black (King Unmoved),Piece Black Queen ,Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],
+             [Piece White (Pawn SingleMove),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),(Empty),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Piece White (Pawn SingleMove),Piece Black (Pawn DoubleMove)],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+             [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),(Empty),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
+             [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 
 performTests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16]
