@@ -1,6 +1,6 @@
 module Moves where
 import Board
-
+import Debug.Trace
 
 validSquares :: [Coordinate] -> [Coordinate]
 validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))

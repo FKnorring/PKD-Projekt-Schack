@@ -1,5 +1,5 @@
 module Board where
-
+import Debug.Trace
 type Board = [[Square]]
 
 {-data Square represents if a certain square is empty or contains a piece-}
