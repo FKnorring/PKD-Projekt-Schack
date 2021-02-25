@@ -108,7 +108,7 @@ changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
 enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) && getSquare crd1 brd /= (Piece clr (Pawn DoubleMove )) && abs (snd crd1 - snd crd2) /= 2
     where front = case snd crd2 of
-              0 -> getSquare (fst crd2,snd crd2) brd == Piece (other clr) (Pawn DoubleMove)
+              0 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
               _ -> getSquare (fst crd2,snd crd2 - 1) brd == Piece (other clr) (Pawn DoubleMove)
           back = case snd crd2 of
               7 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
@@ -118,7 +118,9 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
+        target = getSquare crd2 board
         clr = getColor piece 
+        newboard = changeSquare crd1 board Empty
     if enPassant clr board crd1 crd2
         then do
             return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
@@ -142,11 +144,11 @@ resetDoubleMove clr brd = if null doublepawn then brd else changeSquare (head do
 
 play :: Board -> PColor -> IO ()
 play brd clr = do
-    let brd' = checkDP clr brd
-    printBoard clr brd'
-    mated <- isMated clr brd'
+    let brd' = resetDoubleMove clr brd
+    printBoard clr brd
+    mated <- isMated clr brd
     if mated
-        then if isChecked clr brd' 
+        then if isChecked clr brd 
             then do
             putStrLn (show clr ++ " is mated, the game is over")
             return ()
@@ -203,7 +205,7 @@ validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board
 validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2
         let pieceMoves = case piece of
-                (Pawn _) -> trace (show (pawnMoves crd1 clr brd)) pawnMoves crd1 clr brd
+                (Pawn _) -> pawnMoves crd1 clr brd
                 Knight -> horseMoves crd1 clr brd
                 Bishop -> bishopmoves crd1 clr brd
                 Queen -> queenmoves crd1 clr brd
@@ -222,7 +224,7 @@ validMove clr piece crd1 crd2 brd = do
 isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
-                        (Pawn _) -> mapM (movePiece brd x) (trace (show (pawnMoves x clr brd)) pawnMoves x clr brd)
+                        (Pawn _) -> mapM (movePiece brd x) (pawnMoves x clr brd)
                         Knight -> mapM (movePiece brd x) (horseMoves x clr brd)
                         Bishop -> mapM (movePiece brd x) (bishopmoves x clr brd)
                         Queen -> mapM (movePiece brd x) (queenmoves x clr brd)
@@ -331,6 +333,7 @@ testBoard = [[Empty,Piece Black Knight,Piece Black Bishop,Piece Black (King Unmo
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),(Empty),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
+
 
 
 testBoard' :: Board
