@@ -220,11 +220,18 @@ horseMoves (x,y) clr brd = filter
 horseMoves' :: Coordinate -> [Coordinate]
 horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
 
---OpPieces :: Board -> [Coordinate]
+
 
 getKing :: PColor -> Board -> Coordinate
 getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr (King Moved) || getSquare x brd == Piece clr (King Unmoved)) [(x,y) | x <- [0..7], y <- [0..7]])
 
+{-possibleMoves clr brd
+a function that takes a color and a board and returns a list of all possible coordinates all pieces of the same color can move to
+    RETURNS: a list of tuples containing coordinates.
+    EXAMPLES: possibleMoves White initBoard = [(0,5),(0,4),(1,5),(1,4),(2,5),(0,5),(2,5),(2,4),(3,5),(3,4),(4,5),(4,4),(5,5),(5,4),(6,5),(6,4),(7,5),(5,5),(7,5),(7,4)]
+              possibleMoves Black initBoard = [(0,2),(0,3),(2,2),(0,2),(1,2),(1,3),(2,2),(2,3),(3,2),(3,3),(4,2),(4,3),(5,2),(5,3),(7,2),(5,2),(6,2),(6,3),(7,2),(7,3)]
+              possibleMoves White castleBoard = [(0,5),(0,4),(1,7),(2,7),(3,7),(1,5),(1,4),(2,5),(2,4),(3,5),(3,4),(4,5),(4,4),(5,7),(3,7),(5,5),(5,4),(6,5),(6,4),(7,5),(7,4),(6,7),(5,7)]
+    -}
 possibleMoves :: PColor -> Board -> [Coordinate]
 possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of 
         (Pawn _) -> pawnMoves x clr brd
@@ -235,41 +242,88 @@ possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of
         (King _) -> kingmoves x clr brd)
         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
 
+{-isChecked clr brd
+a function that checks if a kings coordinates is in the list of the opponents possible moves and returns a bool
+    RETURNS: True or False
+    EXAMPLES: isChecked White initBoard = False 
+              isChecked Black testBoard = False
+              isChecked White testBoard = True
+
+-}
 isChecked :: PColor -> Board -> Bool
 isChecked clr brd = getKing clr brd `elem` possibleMoves (other clr) brd
 
+{-getPromotedPawn clr brd
+a function that checks if a pawn is on the opponents backrank and returns its specific coordinate.
+    RETURNS: a list of coordinates.
+    EXAMPLES: getPromotedPawn White initBoard = []
+              getPromtedPawn White testBoard2 = [(0,0)]
+              getPromotedPawn Black testBoard2 = []
+
+-}
 getPromotedPawn :: PColor -> Board -> [Coordinate]
 getPromotedPawn White brd = filter (\x -> getSquare x brd == Piece White (Pawn SingleMove)) [(x,y) | x <- [0..7], y <- [0]]
 getPromotedPawn Black brd = filter (\x -> getSquare x brd == Piece Black (Pawn SingleMove)) [(x,y) | x <- [0..7], y <- [7]]
 
+
+{-clearKSide' clr brd
+a function that maps all the squares for white on the coordinate (4,7) to (7,7) into a list of squares
+and maps all coordinates (4,0) to (7,0) into a list of square for black.
+  RETURNS: a list of squares containg a piece or empty.
+  EXAMPLES: clearKSide' White castleBoard = [♔, , ,♖]
+            clearKSide' Black initBoard = [♚,♝,♞,♜]
+
+-}
 clearKSide' :: PColor ->  Board   -> [Square]
 clearKSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [7]] 
 clearKSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [0]] 
 
-
+{-clearKSide clr brd
+a function that checks if the list of squares from clearKSide' conatins a King unmoved and a Rook unmoved of the same color on the kingside and they have empty squares between them.
+    RETURNS: True or False
+    Examples: clearKSide White initBoard = False
+              clearKSide Black castleBoard = False
+              clearKSide White castleBoard = True-}
 clearKSide :: PColor -> Board -> Bool
 clearKSide clr brd = (clearKSide' clr brd) == [(Piece clr (King Unmoved)),(Empty),(Empty),(Piece clr (Rook Unmoved))]
 
 
 
+
+
+
+{-clearKSide' clr brd
+a function that maps all the squares for white on the coordinate (0,7) to (4,7) into a list of squares
+and maps all coordinates (0,0) to (4,0) into a list of squares for black.
+  RETURNS: a list of squares containg a piece or empty.
+  EXAMPLES: clearKSide' White castleBoard = [[♖, , , ,♔]
+            clearKSide' Black initBoard = [♜,♞,♝,♛,♚]
+
+-}
 clearQSide' :: PColor ->  Board   -> [Square]
 clearQSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [7]] 
 clearQSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [0]] 
 
-
+{-clearQSide clr brd
+a function that checks if the list of squares from clearQSide' contain a King unmoved and a rook unmoved of the same color on the queenside and have empty squares between them.
+    RETURNS: True or False
+    EXAMPLES: clearQSide White initBoard = False
+              clearQSide Black castleBoard = True
+              clearQside White castleBoard = False
+    -}
 clearQSide :: PColor -> Board -> Bool
 clearQSide clr brd = (clearQSide' clr brd) == [(Piece clr (Rook Unmoved)),(Empty),(Empty),(Empty),(Piece clr (King Unmoved))]
 
 
 castleBoard :: Board
-castleBoard = [[Piece Black (Rook Unmoved),Empty,Empty,Empty,Piece Black (King Unmoved),Empty,Empty,Piece Black (Rook Unmoved)],
+castleBoard = [[Piece Black (Rook Unmoved),Empty,Empty,Empty,Piece Black (King Unmoved),Empty,Empty,Piece Black (Rook Moved)],
              [Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove),Piece Black (Pawn SingleMove)],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove),Piece White (Pawn SingleMove)],
-             [Piece White (Rook Unmoved),Empty,Empty,Empty,Piece White (King Unmoved),Empty,Empty,Piece White (Rook Unmoved)]]
+             [Piece White (Rook Moved),Empty,Empty,Empty,Piece White (King Unmoved),Empty,Empty,Piece White (Rook Unmoved)]]
 
 
 
