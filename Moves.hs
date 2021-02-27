@@ -5,6 +5,16 @@ import Debug.Trace
 validSquares :: [Coordinate] -> [Coordinate]
 validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
 
+
+{-pawnMoves coordinate color board
+  a function that checks all possible moves for a white or black pawn and puts them in a list of coordinates
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS: a list of coordinates, the possible moves for a pawn in coordinate of PColor color
+  EXAMPLES: pawnMoves (2,2) White initBoard = [(3,1),(1,1)]
+            pawnMoves (2,1) Black initBoard = [(2,2),(2,3)]
+            pawnMoves (4,4) White initBoard = [(4,3)]
+            pawnMoves (2,3) Black initBoard = [(2,4)]
+ -}
 pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 pawnMoves (x,6) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
@@ -18,6 +28,8 @@ pawnMoves (x,1) Black brd = filter
 pawnMoves (x,y) Black brd = enPassantSquare (x,y) Black brd ++ filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
     (pawnMoves' (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)] ++ enPassantSquare (x,y) Black brd
+
+
 
 enPassantSquare :: Coordinate -> PColor -> Board -> [Coordinate]
 enPassantSquare (7,y) White brd 
