@@ -233,8 +233,8 @@ kingmoves (x,y) clr brd = filter
             kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
             kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
 -}
-    kingmoves' :: Coordinate -> [Coordinate]
-    kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+kingmoves' :: Coordinate -> [Coordinate]
+kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
 {-kingmoves (x,y) clr brd
     Checks all possible moves for the horse depending on the color of it, returns a list of coordinates thats possible for a horse to move to

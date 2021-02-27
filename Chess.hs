@@ -1,3 +1,4 @@
+module Chess where
 import Board
 import Moves
 import Debug.Trace
