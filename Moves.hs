@@ -195,28 +195,68 @@ a function that checks all possible moves for the bishop and puts them in a list
             bishopmoves (4,4) Black initBoard = [(5,3),(6,2),(3,3),(2,2),(5,5),(6,6),(3,5),(2,6)]
             bishopmoves (3,3) White initBoard = [(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
             bishopmoves (3,3) Black initBoard = [(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
-
 -}
 bishopmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 bishopmoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
 
+{-queenmoves (x,y) clr brd 
+    Checks all possible moves for the queen depending on the color of it, returns a list of coordinates thats possible for a queen to move to
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates
+  EXAMPLES: queenmoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4),(5,3),(6,2),(7,1),(3,3),(2,2),(1,1),(5,5),(3,5)]
+            queenmoves (4,4) Black initBoard = [(4,3),(4,2),(4,5),(4,6),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4),(5,3),(6,2),(3,3),(2,2),(5,5),(6,6),(3,5),(2,6)]
+            queenmoves (3,3) White initBoard = [(3,2),(3,1),(3,4),(3,5),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3),(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
+            queenmoves (3,3) Black initBoard = [(3,2),(3,4),(3,5),(3,6),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3),(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
+-}
+
 queenmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
 
+
+{-kingmoves (x,y) clr brd
+    Checks all possible moves for the king depending on the color of it, returns a list of coordinates thats possible for a king to move to
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates
+  EXAMPLES: kingmoves (2,5) White initBoard = [(1,4),(3,4),(2,4),(3,5),(1,5)]
+            kingmoves (2,5) Black initBoard = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
+            kingmoves (3,3) White initBoard = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
+            kingmoves (3,3) Black initBoard = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]-}
 kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 kingmoves (x,y) clr brd = filter 
    (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y))
 
+{-kingmoves' (x,y)
+  Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates
+  EXAMPLES: kingmoves' (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
+            kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
+            kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
+-}
+    kingmoves' :: Coordinate -> [Coordinate]
+    kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
-kingmoves' :: Coordinate -> [Coordinate]
-kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
-
-
+{-kingmoves (x,y) clr brd
+    Checks all possible moves for the horse depending on the color of it, returns a list of coordinates thats possible for a horse to move to
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates
+  EXAMPLES: horseMoves (2,5) White initBoard = [(1,4),(3,4),(2,4),(3,5),(1,5)]
+            horseMoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
+            horseMoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
+            horseMoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
+-}
 horseMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 horseMoves (x,y) clr brd = filter 
    (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (horseMoves' (x,y))
 
-
+{-horseMoves' (x,y)
+  Aux function for horsemoves which makes sure that the coordinates returned in horsemoves are valid, meaning that no int in a coordinte is < 0 or > 8
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates 
+  EXAMPLES: horseMoves' (2,5)  = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
+            horseMoves' (0,0)  = [(2,1),(1,2)]
+            horseMoves' (3,3)  = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
+-}
 horseMoves' :: Coordinate -> [Coordinate]
 horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
 

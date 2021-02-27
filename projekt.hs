@@ -3,7 +3,7 @@ import Moves
 import Debug.Trace
 
 
-import Test.HUnit
+--import Test.HUnit
 
 main :: IO () 
 main = play initBoard White 
@@ -52,6 +52,8 @@ coordToStr (5,z) = 'f' : show (8 - z)
 coordToStr (6,z) = 'g' : show (8 - z)
 coordToStr (7,z) = 'h' : show (8 - z)
 
+{-strToPiece string
+-}
 strToPiece :: String -> PType 
 strToPiece "q" = Queen
 strToPiece "b" = Bishop
@@ -70,8 +72,12 @@ initBoard = [[Piece Black (Rook Unmoved ),Piece Black Knight,Piece Black Bishop,
              [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
-{-printBoard
-a function that prints the current board to the terminal
+{-printBoard color board
+    a function that prints a board to the terminal, prints from whites perspecitve if the first Argument is White, if its Black it prints
+    from blacks perspective
+    PRE: type in "chcp.com 65001" in terminal before ghci so u it can print the pieces. 
+    RETURNS: Multiple strings in the terminal
+    EXAMPLES: 
 -}
 printBoard :: PColor -> Board -> IO ()
 printBoard clr brd = putStrLn (case clr of
@@ -97,6 +103,7 @@ printBlackBoard' x y ([]:xs)      = printBlackBoard' 1 (y-1) xs ++ "\n  ╠═�
 printBlackBoard' x y []           =  ""
 
 
+{-changeSquare coordinate board -}
 changeSquare :: Coordinate -> Board -> Square -> Board
 changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
@@ -346,7 +353,7 @@ testBoard' = [[Empty,Piece Black Knight,Piece Black Bishop,Piece Black (King Unm
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 
-performTests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16]
+{-performTests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16]
 
 test1 = TestCase $ assertEqual "Looks if the safe Black king is in check on startboard" False (isChecked White initBoard)
 test2 = TestCase $ assertEqual "Looks if the white king is in check on testboard" True (isChecked White testBoard)
@@ -377,4 +384,4 @@ test14 = TestCase $ assertEqual "test the black kings possible moves on testBoar
 
 test15 = TestCase $ assertEqual "test coordstr function for a number of coordinates" ["a8","b8","d5","e3","h1","g3"] (map coordToStr [(0,0),(1,0),(3,3),(4,5),(7,7),(6,5)])
 
-test16 = TestCase $ assertEqual "test strTocord function for a number of stings" [(0,8),(1,1),(2,3),(1,5)] (map strToCoord ["a0", "b7","c5","b3"])
+test16 = TestCase $ assertEqual "test strTocord function for a number of stings" [(0,8),(1,1),(2,3),(1,5)] (map strToCoord ["a0", "b7","c5","b3"])-}
