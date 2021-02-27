@@ -233,8 +233,8 @@ kingmoves (x,y) clr brd = filter
             kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
             kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
 -}
-    kingmoves' :: Coordinate -> [Coordinate]
-    kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+kingmoves' :: Coordinate -> [Coordinate]
+kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
 {-kingmoves (x,y) clr brd
     Checks all possible moves for the horse depending on the color of it, returns a list of coordinates thats possible for a horse to move to
@@ -242,6 +242,16 @@ kingmoves (x,y) clr brd = filter
   RETURNS : A list of coordinates
   EXAMPLES: horseMoves (2,5) White initBoard = [(1,4),(3,4),(2,4),(3,5),(1,5)]
             horseMoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
+            horseMoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
+            horseMoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
+-}
+
+{-horseMoves (x,y) clr brd
+  Checks all possible moves for the horse depending on the color of it, returns a list of coordinates thats possible for a horse to move to
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates
+  EXAMPLES: horseMoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
+            horseMoves (2,5) Black initBoard = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
             horseMoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
             horseMoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
 -}
