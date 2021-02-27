@@ -233,8 +233,8 @@ kingmoves (x,y) clr brd = filter
             kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
             kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
 -}
-    kingmoves' :: Coordinate -> [Coordinate]
-    kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+kingmoves' :: Coordinate -> [Coordinate]
+kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
 {-kingmoves (x,y) clr brd
     Checks all possible moves for the horse depending on the color of it, returns a list of coordinates thats possible for a horse to move to
@@ -260,7 +260,13 @@ horseMoves (x,y) clr brd = filter
 horseMoves' :: Coordinate -> [Coordinate]
 horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
 
-
+{-getKing clr brd
+a function that finds a king Moved or King Unmoved if White or Black on the board and returns its coordinate.
+  RETURNS: a coordinate on the baord 
+  EXAMPLES: getKing White initBoard = (4,7)
+            getKing Black initBoartd = (4,0)
+            getKing Black testBoard = (3,0)
+  -}
 
 getKing :: PColor -> Board -> Coordinate
 getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr (King Moved) || getSquare x brd == Piece clr (King Unmoved)) [(x,y) | x <- [0..7], y <- [0..7]])
