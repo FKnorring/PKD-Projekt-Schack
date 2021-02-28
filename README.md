@@ -1,1 +1,0 @@
-# PKD-Projekt-Schack
