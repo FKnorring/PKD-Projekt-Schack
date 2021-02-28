@@ -1,5 +1,5 @@
 import Board
 import Moves
-import Chess hiding (main)
+import Chess hiding (main, play)
 import Graphics.Gloss
-main = display (InWindow "Chesskell" (640, 640) (10, 10)) white (Circle 80)
+import Graphics.Gloss.Juicy
