@@ -2,6 +2,7 @@ import Board
 import Moves
 import Chess hiding (main, play)
 import Graphics.Gloss
+import Graphics.Gloss.Interface.Pure.Game
 
 window =  InWindow "Chesskell" (480, 480) (100, 100)
 
@@ -43,17 +44,10 @@ render brd imgs =
             Empty -> imgs !! 12
     | x <- [0..7], y <- [0..7], sqr <- [(brd !! y) !! x]]
 
-checkCoordinate :: Float -> Maybe Int
-checkCoordinate f' =
-  let f = f' / 60
-  in  (-1) <$ guard (-1.5 < f && f < -0.5)
-  <|> 0    <$ guard (-0.5 < f && f < 0.5)
-  <|> 1    <$ guard (0.5  < f && f < 1.5)
+
+getCoordinate crd = undefined
 
 handleKeys :: Event -> Board -> Board
-handleKeys (EventKey (MouseButton LeftButton) Down _ (x', y')) b =
-  fromMaybe b $ do
-    x <- checkCoordinate x'
-    y <- checkCoordinate y'
-    return $ pushToken (x, y) b
-handleKeys _ b = b
+handleKeys (EventKey (MouseButton LeftButton) Down _ (x', y')) b = undefined
+
+move = undefined
