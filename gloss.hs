@@ -22,10 +22,10 @@ main = do
     blackqueen <- loadBMP "blackqueen.bmp"
     empty <- loadBMP "empty.bmp"
     let brd = initBoard
-    display window white (render brd [whitepawn, whitebishop,whiterook,whiteknight,whiteking,whitequeen,blackpawn,blackbishop,blackrook,blackknight,blackking,blackqueen,empty])
+    display window white (renderBoard brd [whitepawn, whitebishop,whiterook,whiteknight,whiteking,whitequeen,blackpawn,blackbishop,blackrook,blackknight,blackking,blackqueen,empty])
 
-render :: Board -> [Picture] -> Picture
-render brd imgs =
+renderBoard :: Board -> [Picture] -> Picture
+renderBoard brd imgs =
  pictures $ [ translate (fromIntegral $ -210+60*x)
                 (fromIntegral $ 210-60*y) $
         case sqr of
@@ -48,6 +48,6 @@ render brd imgs =
 getCoordinate crd = undefined
 
 handleKeys :: Event -> Board -> Board
-handleKeys (EventKey (MouseButton LeftButton) Down _ (x', y')) b = undefined
+handleKeys (EventKey (MouseButton LeftButton) Down _ (x, y)) b = undefined
 
 move = undefined
