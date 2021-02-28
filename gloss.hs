@@ -21,13 +21,12 @@ main = do
     blackking <- loadBMP "blackking.bmp"
     blackqueen <- loadBMP "blackqueen.bmp"
     empty <- loadBMP "empty.bmp"
-    let brd = initBoard
+    let brd = testBoard
     display window white (renderBoard brd [whitepawn, whitebishop,whiterook,whiteknight,whiteking,whitequeen,blackpawn,blackbishop,blackrook,blackknight,blackking,blackqueen,empty])
 
 renderBoard :: Board -> [Picture] -> Picture
 renderBoard brd imgs =
- pictures $ [ translate (fromIntegral $ -210+60*x)
-                (fromIntegral $ 210-60*y) $
+ pictures $ [translate (fromIntegral $ -210+60*x) (fromIntegral $ 210-60*y) $
         case sqr of
             Piece White (Pawn _) -> imgs !! 0
             Piece White Bishop -> imgs !! 1
@@ -42,10 +41,10 @@ renderBoard brd imgs =
             Piece Black (King _) -> imgs !! 10
             Piece Black Queen -> imgs !! 11
             Empty -> imgs !! 12
-    | x <- [0..7], y <- [0..7], sqr <- [(brd !! y) !! x]]
+        | x <- [0..7], y <- [0..7], sqr <- [(brd !! y) !! x]]
 
 
-getCoordinate crd = undefined
+parseCoordinate crd = undefined
 
 handleKeys :: Event -> Board -> Board
 handleKeys (EventKey (MouseButton LeftButton) Down _ (x, y)) b = undefined
