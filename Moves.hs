@@ -33,7 +33,12 @@ pawnMoves (x,y) Black brd = enPassantSquare (x,y) Black brd ++ filter
     (pawnMoves' (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)] ++ enPassantSquare (x,y) Black brd
 
 
-
+{-enPassantSquare coordinate color board
+  a function that gives the coordinate of the square for an en passant move if such is availible
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS: a list containing either nothing or the coordinate where containing the en passant move
+  EXAMPLES: enPassantSquare (6,4) White initBoard == []
+ -}
 enPassantSquare :: Coordinate -> PColor -> Board -> [Coordinate]
 enPassantSquare (7,y) White brd 
     | getSquare (6,y) brd == Piece Black (Pawn DoubleMove) = [(6,y-1)]
