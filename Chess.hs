@@ -170,7 +170,7 @@ play brd clr = do
             play newbrd' $ other clr
 
             
-playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
+playerTurn :: Coordinate -> Coordinate -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
     if crd1 == (99,99)
         then kingSideCastle clr brd
