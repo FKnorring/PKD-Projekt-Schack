@@ -204,7 +204,9 @@ play brd clr = do
             newbrd' <- promote clr newbrd
             play newbrd' $ other clr
 
-       
+{-
+
+-}       
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
     if crd1 == (99,99)
@@ -222,7 +224,9 @@ playerTurn crd1 crd2 clr brd = do
 
 
 
-
+{-askMove
+a function that ask a player to make a specific move and checks if both inputs are in validmove. 
+-}
 askMove :: IO (Coordinate, Coordinate)
 askMove = do
     putStrLn "Please input two valid coordinates"
@@ -236,7 +240,8 @@ askMove = do
         else do
             putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
-
+{-makeMove clr brd
+a function that makes a move for a input clr on the board if its a possible move. -}
 makeMove :: PColor -> Board -> IO Board
 makeMove clr brd = do
         (crd1,crd2) <- askMove
@@ -244,7 +249,8 @@ makeMove clr brd = do
     
 
 validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]] ++ ["O-O","O-O-O"]
-
+{-validMove clr piece crd1 crd2 brd
+ a fucntion that checks is a players inputs results in a valid move-}
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2
@@ -264,7 +270,8 @@ validMove clr piece crd1 crd2 brd = do
             else do 
                 putStrLn "Invalid Move"
                 makeMove clr brd
-
+{-isMated clr brd
+A function that checks if any possible move by a color changes isChecked to false. -}
 isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
@@ -277,7 +284,8 @@ isMated clr brd = do
                         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
             let allbrds = concat brds
             return $ not (False `elem` map (isChecked clr) allbrds)
-
+{-promote clr brd
+a function that promotes a piece for the input clr to a specific piece if the pawn is on the right rank.-}
 promote :: PColor -> Board -> IO Board 
 promote clr brd = do
             if null (getPromotedPawn clr brd)
@@ -289,7 +297,8 @@ promote clr brd = do
                                                         (Rook _) -> Piece clr (Rook Moved) 
                                                         Bishop -> Piece clr Bishop 
                                                         Knight -> Piece clr Knight)
-
+{-askPromte
+a function that ask the player what piece they want to promote-}
 askPromote :: IO PType
 askPromote = do
     putStrLn "What do you want to promote to?"
