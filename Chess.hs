@@ -54,6 +54,14 @@ coordToStr (6,z) = 'g' : show (8 - z)
 coordToStr (7,z) = 'h' : show (8 - z)
 
 {-strToPiece string
+  makes a PType from a string 
+  PRE: the string must be "q", "b", "k" or "r"
+  RETURNS: Certain PTypes used for promotion
+  EXAMPLES: strToPiece "q" = Queen
+            strToPiece "b" = Bishop
+            strToPiece "k" = Knight
+            strToPiece "r" = Rook Moved
+
 -}
 strToPiece :: String -> PType 
 strToPiece "q" = Queen
@@ -104,14 +112,25 @@ printBlackBoard' x y ([]:xs)      = printBlackBoard' 1 (y-1) xs ++ "\n  ╠═�
 printBlackBoard' x y []           =  ""
 
 
-{-changeSquare coordinate board -}
+{-changeSquare coordinate board square
+ a function that takes a coordinate from a board and changes whats on that coordinate to square
+ PRE: must be a valid coordinate, meaning from (0,0) to (7,7).
+ RETURNS: A new board with the differnece being the square that is changed within the argument board-}
+ --VARIANT: Length of board ?
+
 changeSquare :: Coordinate -> Board -> Square -> Board
 changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
 
+{-changeSquare' Int [square] square 
+ an aux function that takes the first int in our coordinate and calls recursevly until it is 0
+ PRE: must be a valid int, from 0 to 7.
+ RETURNS: A list of squares -}
+--VARIANT: The first int in coordinate.
 changeSquare' :: Int -> [Square] -> Square -> [Square]
 changeSquare' 0 (a:xs) square = square:xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
+
 
 enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
 enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) && getSquare crd1 brd /= (Piece clr (Pawn DoubleMove )) && abs (snd crd1 - snd crd2) /= 2
@@ -122,7 +141,15 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
               7 -> False
               _ -> getSquare (fst crd2,snd crd2 + 1) brd == Piece (other clr) (Pawn DoubleMove)
 
-  
+{-strToPiece string
+  makes a PType from a string 
+  PRE: the string must be "q", "b", "k" or "r"
+  RETURNS: Certain PTypes used for promotion
+  EXAMPLES: strToPiece "q" = Queen
+            strToPiece "b" = Bishop
+            strToPiece "k" = Knight
+            strToPiece "r" = Rook Moved
+-}
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
