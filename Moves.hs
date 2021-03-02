@@ -277,18 +277,38 @@ kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 kingmoves (x,y) clr brd = filter 
    (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y)) 
 
-
+{-castlemoves color board
+    a function to get the coordinate for castling if is is availible
+    RETURNS: if castling is availible it returns a list of the coordinates where the king can move to castle
+             if it is not availible it returns an empty list
+    EXAMPLES: castlemoves White initBoard == []
+              casltemoves Black castleBoard == [(6,0),(2,0)]
+-}
 castlemoves :: PColor -> Board -> [(Coordinate)]
 castlemoves clr brd = case (canCastleK clr brd, canCastleQ clr brd) of
+                                    (True,True) -> if clr == White then [(6,7),(2,7)] else [(6,0),(2,0)]
                                     (True,_) -> if clr == White then [(6,7)] else [(6,0)]
                                     (_,True) -> if clr == White then [(2,7)] else [(2,0)]
                                     _ -> []
 
-
+{-canCastleK color board
+    a function to check if king side castling is availible for color on board
+    RETURNS: True if there are no pieces between the rook and the king and they are both are unmoved
+             False if the above is not true or if there is a piece attacking the square where the king has to pass
+    EXAMPLES: canCastleK White initBoard == False
+              canCastleK White castleBoard == True
+-}
 canCastleK :: PColor -> Board -> Bool
 canCastleK White brd = not ((5,7) `elem` possibleMoves Black brd) && clearKSide White brd 
 canCastleK Black brd = not ((5,0) `elem` possibleMoves White brd) && clearKSide Black brd 
 
+{-canCastleQ color board
+    a function to check if queen side castling is availible for color on board
+    RETURNS: True if there are no pieces between the rook and the king and they are both are unmoved
+             False if the above is not true or if there is a piece attacking the square where the king has to pass
+    EXAMPLES: canCastleQ White initBoard == False
+              canCastleQ White castleBoard == True
+-}
 canCastleQ :: PColor -> Board -> Bool
 canCastleQ White brd = not ((3,7) `elem` possibleMoves Black brd) && clearQSide White brd
 canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide Black brd
@@ -328,7 +348,7 @@ horseMoves (x,y) clr brd = filter
    (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (horseMoves' (x,y))
 
 {-horseMoves' (x,y)
-  Aux function for horsemoves which makes sure that the coordinates returned in horsemoves are valid, meaning that no int in a coordinte is < 0 or > 8
+  auxiliary function for horsemoves which makes sure that the coordinates returned in horsemoves are valid, meaning that no int in a coordinte is < 0 or > 8
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates 
   EXAMPLES: horseMoves' (2,5)  = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
@@ -339,13 +359,12 @@ horseMoves' :: Coordinate -> [Coordinate]
 horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y-1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
 
 {-getKing clr brd
-a function that finds a king Moved or King Unmoved if White or Black on the board and returns its coordinate.
-  RETURNS: a coordinate on the baord 
+    a function that finds a king Moved or King Unmoved if White or Black on the board and returns its coordinate.
+  RETURNS: a coordinate on the board 
   EXAMPLES: getKing White initBoard = (4,7)
             getKing Black initBoartd = (4,0)
             getKing Black testBoard = (3,0)
   -}
-
 getKing :: PColor -> Board -> Coordinate
 getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr (King Moved) || getSquare x brd == Piece clr (King Unmoved)) [(x,y) | x <- [0..7], y <- [0..7]])
 
@@ -372,7 +391,6 @@ a function that checks if a kings coordinates is in the list of the opponents po
     EXAMPLES: isChecked White initBoard = False 
               isChecked Black testBoard = False
               isChecked White testBoard = True
-
 -}
 isChecked :: PColor -> Board -> Bool
 isChecked clr brd = getKing clr brd `elem` possibleMoves (other clr) brd
@@ -410,11 +428,6 @@ a function that checks if the list of squares from clearKSide' conatins a King u
               clearKSide White castleBoard = True-}
 clearKSide :: PColor -> Board -> Bool
 clearKSide clr brd = (clearKSide' clr brd) == [(Piece clr (King Unmoved)),(Empty),(Empty),(Piece clr (Rook Unmoved))]
-
-
-
-
-
 
 {-clearQSide' clr brd
 a function that maps all the squares for white on the coordinate (0,7) to (4,7) into a list of squares
