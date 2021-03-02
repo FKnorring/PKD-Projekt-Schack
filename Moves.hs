@@ -19,6 +19,7 @@ validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
             pawnMoves (2,3) Black initBoard = [(2,4)]
  -}
 pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT:
 pawnMoves (x,6) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
     (pawnMoves' (x,6) White) ++ if isEmpty (getSquare (x, 5) brd) then (x,5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)]) else []
@@ -87,6 +88,7 @@ a function that takes the coordiantes, color of the piece and a board and return
 
 -}
 toFront :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT:
 toFront (x,y) clr brd 
     | y-1 == -1 = []
     | isEmpty $ getSquare (x,y-1) brd = (x,y-1): toFront (x,y-1) clr brd 
@@ -105,6 +107,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             
             -}
 toBack :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT: 
 toBack (x,y) clr brd 
     | y+1 == 8 = []
     | isEmpty $ getSquare (x,y+1) brd = (x,y+1): toBack (x,y+1) clr brd 
@@ -121,6 +124,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             toLeft (4,4) White initBoard = [(3,4),(2,4),(1,4),(0,4)]
             -}
 toLeft :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT:
 toLeft (x,y) clr brd 
     | x-1 == -1 = []
     | isEmpty $ getSquare (x-1,y) brd = (x-1,y): toLeft (x-1,y) clr brd 
@@ -137,6 +141,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             toRight (4,4) White initBoard = [(5,4),(6,4),(7,4)]
             -}
 toRight :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT:
 toRight (x,y) clr brd 
     | x+1 == 8 = []
     | isEmpty $ getSquare (x+1,y) brd = (x+1,y): toRight (x+1,y) clr brd 
@@ -153,6 +158,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             diarBR (4,4) White initBoard = [(5,5)]
             -}
 diagBR :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT:
 diagBR (x,y) clr brd 
     | x+1 == 8 = []
     | y+1 == 8 = []
@@ -171,6 +177,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             diarFR (4,4) White initBoard = [(5,3),(6,2),(7,1)]
             -}
 diagFR :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT:
 diagFR (x,y) clr brd 
     | x+1 == 8 = []
     | y-1 == -1 = []
@@ -189,6 +196,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             diarBL (4,4) White initBoard = [(3,5)]
             -}
 diagBL :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT: 
 diagBL (x,y) clr brd 
     | x-1 == -1 = []
     | y+1 == 8 = []
@@ -207,6 +215,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             -}
 
 diagFL :: Coordinate -> PColor -> Board -> [Coordinate]
+--VARIANT:
 diagFL (x,y) clr brd 
     | x-1 == -1 = []
     | y-1 == -1 = []
