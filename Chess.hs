@@ -204,8 +204,8 @@ play brd clr = do
             newbrd' <- promote clr newbrd
             play newbrd' $ other clr
 
-{-
-
+{-playerTurn crd1 crd2 clr brd
+A function that performs one turn for a clr by calling on multiple functions that checks if its a legal move
 -}       
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
