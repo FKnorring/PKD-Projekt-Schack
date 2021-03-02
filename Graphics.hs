@@ -56,7 +56,8 @@ bsFunc _ = return
 
 renderGame :: [Picture] -> Game -> IO Picture 
 renderGame imgs game = case gameState game of
-    Mate | Stalemate -> return $ scale (0.2) (0.2) $ Text $ show (gamePlayer game) ++ " is mated"
+    Mate -> return $ scale 0.2 0.2 $ Text $ show (gamePlayer game) ++ " is mated"
+    Stalemate -> return $ scale 0.2 0.2 $ Text "Stalemate"
     _ -> return $ renderBoard imgs (gameBoard game)
        
 
@@ -99,7 +100,8 @@ getClicks :: Event -> Game -> IO Game
 getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
     mated <- isMated (gamePlayer game) (gameBoard game)
     if mated
-    then do return $ game {gameState = Mate | Stalemate}
+    then if isChecked (gamePlayer game) (gameBoard game) then return $ game {gameState = Mate}
+                              else return $ game {gameState = Stalemate}
     else case gameState game of
         Crd1 -> do
             let crd1 = parseCoord (x,y)

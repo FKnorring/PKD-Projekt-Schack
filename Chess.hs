@@ -300,7 +300,7 @@ isMated clr brd = do
                         (King _) -> mapM (movePiece brd x) (kingmoves x clr brd))
                         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
             let allbrds = concat brds
-            return $ not (False `elem` map (isChecked clr) allbrds)
+            return $ notElem False (map (isChecked clr) allbrds)
 {-promote clr brd
 a function that promotes a piece for the input clr to a specific piece if the pawn is on the right rank.-}
 promote :: PColor -> Board -> IO Board 
@@ -326,24 +326,24 @@ askPromote = do
 
 testBoard :: Board
 testBoard = [[Empty,Piece Black Knight,Piece Black Bishop,Piece Black (King Unmoved),Piece Black Queen ,Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],
-             [Piece White (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),(Empty),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
+             [Piece White (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty,Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Piece White (Pawn SingleMove),Piece Black (Pawn DoubleMove)],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),(Empty),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
+             [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Empty,Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 
 
 testBoard2 :: Board
 testBoard2 = [[Piece White (Pawn SingleMove),Piece Black Knight,Piece Black Bishop,Piece Black (King Unmoved),Piece Black Queen ,Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],
-             [Piece White (Pawn SingleMove),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),(Empty),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
+             [Piece White (Pawn SingleMove),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty,Piece Black (Pawn SingleMove ),Piece Black (Pawn SingleMove ),Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Piece White (Pawn SingleMove),Piece Black (Pawn DoubleMove)],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
              [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
-             [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),(Empty),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
+             [Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Empty,Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove ),Piece White (Pawn SingleMove )],
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 
