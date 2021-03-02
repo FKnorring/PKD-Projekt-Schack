@@ -137,11 +137,7 @@ validMoveGame crd1 crd2 game = do
                     Bishop -> bishopmoves crd1 clr brd
                     Queen -> queenmoves crd1 clr brd
                     (Rook _) -> rookmoves crd1 clr brd
-                    (King _) -> kingmoves crd1 clr brd ++ 
-                                (case (canCastleK clr brd, canCastleQ clr brd) of
-                                    (True,_) -> if clr == White then [(6,7)] else [(6,0)]
-                                    (_,True) -> if clr == White then [(2,7)] else [(2,0)]
-                                    _ -> [])
+                    (King _) -> kingmoves crd1 clr brd 
         newbrd <- movePiece brd crd1 crd2
         if crd2 `elem` pieceMoves   
             then if isChecked clr newbrd
@@ -149,10 +145,15 @@ validMoveGame crd1 crd2 game = do
                     putStrLn "Invalid Move!"
                     return $ game {gameState = Crd1, fstCrd = (9,9)}
                 else do
-                    newbrd' <- promote clr newbrd
+                    newbrd' <- autopromote clr newbrd
                     return $ game { gameBoard = newbrd', gamePlayer = other clr, gameState = Crd1}
             else do
                 putStrLn "Invalid move!"
                 return $ game {gameState = Crd1, fstCrd = (9,9)}
 
-move = undefined
+autopromote :: PColor -> Board -> IO Board 
+autopromote clr brd = do
+            if null (getPromotedPawn clr brd)
+                then return brd
+                else do
+                    return $ changeSquare (head (getPromotedPawn clr brd)) brd (Piece clr Queen)
