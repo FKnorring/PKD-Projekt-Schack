@@ -227,7 +227,7 @@ play brd clr = do
             play newbrd' $ other clr
 
 {-playerTurn crd1 crd2 clr brd
-A function that performs one turn for a clr by calling on multiple functions that checks if its a legal move
+    a function that performs one turn for a clr by calling on multiple functions that checks if its a legal move
 -}       
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
@@ -235,14 +235,11 @@ playerTurn crd1 crd2 clr brd = do
         then validMove clr (getType sqrcord1) crd1 crd2 brd
         else do 
                 putStrLn $ "No " ++ show clr ++ " piece at coordinate"
-                (crd1,crd2) <- askMove
-                playerTurn crd1 crd2 clr brd
+                makeMove clr brd
         where sqrcord1 = getSquare crd1 brd
 
-
-
 {-askMove
-a function that ask a player to make a specific move and checks if both inputs are in validmove. 
+    a function that ask a player to make a specific move and checks if both inputs are in validmove. 
 -}
 askMove :: IO (Coordinate, Coordinate)
 askMove = do
@@ -258,7 +255,7 @@ askMove = do
             putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
 {-makeMove clr brd
-a function that makes a move for a input clr on the board if its a possible move. -}
+    a function that asks the clr for two coordinates then tries to make said move-}
 makeMove :: PColor -> Board -> IO Board
 makeMove clr brd = do
         (crd1,crd2) <- askMove
@@ -266,7 +263,11 @@ makeMove clr brd = do
     
 
 validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
-
+{-validMove color piece firstcoordinate secondcoordinate board
+    a function to make a move for color with piece from firstcoordinate to second coordinate on board if it is valid
+    RETURNS: a new board if a valid move is made
+             outputs "Invalid Move" if the move is invalid and then asks for new coordinates
+-}
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2

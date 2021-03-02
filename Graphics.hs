@@ -5,7 +5,7 @@ import Debug.Trace
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
-data State = Crd1 | Crd2 | GameOver deriving (Eq,Show)
+data State = Crd1 | Crd2 | Mate | Stalemate deriving (Eq,Show)
 
 type Coords = (Coordinate,Coordinate)
 
@@ -21,32 +21,32 @@ initGame = Game { gameBoard = initBoard, gamePlayer = White, gameState = Crd1, f
 
 main :: IO ()
 main = do
-    whitepawn <- loadBMP "whitepawn.bmp"
-    whitebishop <- loadBMP "whitebishop.bmp"
-    whiterook <- loadBMP "whiterook.bmp"
-    whiteknight <- loadBMP "whiteknight.bmp"
-    whiteking <- loadBMP "whiteking.bmp"
-    whitequeen <- loadBMP "whitequeen.bmp"
-    blackpawn <- loadBMP "blackpawn.bmp"
-    blackbishop <- loadBMP "blackbishop.bmp"
-    blackrook <- loadBMP "blackrook.bmp"
-    blackknight <- loadBMP "blackknight.bmp"
-    blackking <- loadBMP "blackking.bmp"
-    blackqueen <- loadBMP "blackqueen.bmp"
-    empty <- loadBMP "empty.bmp"
-    whitepawn' <- loadBMP "whitepawn'.bmp"
-    whitebishop' <- loadBMP "whitebishop'.bmp"
-    whiterook' <- loadBMP "whiterook'.bmp"
-    whiteknight' <- loadBMP "whiteknight'.bmp"
-    whiteking' <- loadBMP "whiteking'.bmp"
-    whitequeen' <- loadBMP "whitequeen'.bmp"
-    blackpawn' <- loadBMP "blackpawn'.bmp"
-    blackbishop' <- loadBMP "blackbishop'.bmp"
-    blackrook' <- loadBMP "blackrook'.bmp"
-    blackknight' <- loadBMP "blackknight'.bmp"
-    blackking' <- loadBMP "blackking'.bmp"
-    blackqueen' <- loadBMP "blackqueen'.bmp"
-    empty' <- loadBMP "empty'.bmp"
+    whitepawn <- loadBMP "imgs/whitepawn.bmp"
+    whitebishop <- loadBMP "imgs/whitebishop.bmp"
+    whiterook <- loadBMP "imgs/whiterook.bmp"
+    whiteknight <- loadBMP "imgs/whiteknight.bmp"
+    whiteking <- loadBMP "imgs/whiteking.bmp"
+    whitequeen <- loadBMP "imgs/whitequeen.bmp"
+    blackpawn <- loadBMP "imgs/blackpawn.bmp"
+    blackbishop <- loadBMP "imgs/blackbishop.bmp"
+    blackrook <- loadBMP "imgs/blackrook.bmp"
+    blackknight <- loadBMP "imgs/blackknight.bmp"
+    blackking <- loadBMP "imgs/blackking.bmp"
+    blackqueen <- loadBMP "imgs/blackqueen.bmp"
+    empty <- loadBMP "imgs/empty.bmp"
+    whitepawn' <- loadBMP "imgs/whitepawn'.bmp"
+    whitebishop' <- loadBMP "imgs/whitebishop'.bmp"
+    whiterook' <- loadBMP "imgs/whiterook'.bmp"
+    whiteknight' <- loadBMP "imgs/whiteknight'.bmp"
+    whiteking' <- loadBMP "imgs/whiteking'.bmp"
+    whitequeen' <- loadBMP "imgs/whitequeen'.bmp"
+    blackpawn' <- loadBMP "imgs/blackpawn'.bmp"
+    blackbishop' <- loadBMP "imgs/blackbishop'.bmp"
+    blackrook' <- loadBMP "imgs/blackrook'.bmp"
+    blackknight' <- loadBMP "imgs/blackknight'.bmp"
+    blackking' <- loadBMP "imgs/blackking'.bmp"
+    blackqueen' <- loadBMP "imgs/blackqueen'.bmp"
+    empty' <- loadBMP "imgs/empty'.bmp"
     let pieces = [whitepawn,whitebishop,whiterook,whiteknight,whiteking,whitequeen,blackpawn,blackbishop,blackrook,blackknight,blackking,blackqueen,empty,
                   whitepawn',whitebishop',whiterook',whiteknight',whiteking',whitequeen',blackpawn',blackbishop',blackrook',blackknight',blackking',blackqueen',empty']
     playIO window white 30 initGame (renderGame pieces) getClicks bsFunc
@@ -56,7 +56,7 @@ bsFunc _ = return
 
 renderGame :: [Picture] -> Game -> IO Picture 
 renderGame imgs game = case gameState game of
-    GameOver -> return $ scale (0.2) (0.2) $ Text $ show (gamePlayer game) ++ " is mated"
+    Mate | Stalemate -> return $ scale (0.2) (0.2) $ Text $ show (gamePlayer game) ++ " is mated"
     _ -> return $ renderBoard imgs (gameBoard game)
        
 
@@ -99,7 +99,7 @@ getClicks :: Event -> Game -> IO Game
 getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
     mated <- isMated (gamePlayer game) (gameBoard game)
     if mated
-    then do return $ game {gameState = GameOver}
+    then do return $ game {gameState = Mate | Stalemate}
     else case gameState game of
         Crd1 -> do
             let crd1 = parseCoord (x,y)
@@ -137,7 +137,7 @@ validMoveGame crd1 crd2 game = do
                     Bishop -> bishopmoves crd1 clr brd
                     Queen -> queenmoves crd1 clr brd
                     (Rook _) -> rookmoves crd1 clr brd
-                    (King _) -> kingmoves crd1 clr brd 
+                    (King _) -> kingmoves crd1 clr brd ++ castlemoves clr brd
         newbrd <- movePiece brd crd1 crd2
         if crd2 `elem` pieceMoves   
             then if isChecked clr newbrd
