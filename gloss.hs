@@ -12,12 +12,12 @@ type Coords = (Coordinate,Coordinate)
 data Game = Game { gameBoard :: Board,
                    gamePlayer :: PColor,
                    gameState :: State,
-                   gameCoords :: Coords
+                   fstCrd :: Coordinate
                     } deriving (Eq, Show)
 
 window =  InWindow "Chesskell" (480, 480) (100, 100)
 
-initGame = Game { gameBoard = initBoard, gamePlayer = White, gameState = Crd1, gameCoords = ((0,0),(0,0))}
+initGame = Game { gameBoard = initBoard, gamePlayer = White, gameState = Crd1, fstCrd = (0,0)}
 
 main :: IO ()
 main = do
@@ -47,12 +47,12 @@ main = do
     blackking' <- loadBMP "blackking'.bmp"
     blackqueen' <- loadBMP "blackqueen'.bmp"
     empty' <- loadBMP "empty'.bmp"
-    let pieces = [whitepawn, whitebishop,whiterook,whiteknight,whiteking,whitequeen,blackpawn,blackbishop,blackrook,blackknight,blackking,blackqueen,empty,
-                  whitepawn', whitebishop',whiterook',whiteknight',whiteking',whitequeen',blackpawn',blackbishop',blackrook',blackknight',blackking',blackqueen',empty']
+    let pieces = [whitepawn,whitebishop,whiterook,whiteknight,whiteking,whitequeen,blackpawn,blackbishop,blackrook,blackknight,blackking,blackqueen,empty,
+                  whitepawn',whitebishop',whiterook',whiteknight',whiteking',whitequeen',blackpawn',blackbishop',blackrook',blackknight',blackking',blackqueen',empty']
     playIO window white 30 initGame (renderGame pieces) getClicks bsFunc
 
 bsFunc :: Float -> Game -> IO Game
-bsFunc _ game = return game
+bsFunc _ = return
 
 renderGame :: [Picture] -> Game -> IO Picture 
 renderGame imgs game = case gameState game of
@@ -63,36 +63,8 @@ renderGame imgs game = case gameState game of
 renderBoard :: [Picture] -> Board -> Picture
 renderBoard imgs brd =
  pictures $ [translate (fromIntegral $ -210+60*x) (fromIntegral $ 210-60*y) $
-        case (even x, even y) of
-        (True,True) -> case sqr of
-                Piece White (Pawn _) -> imgs !! 0
-                Piece White Bishop -> imgs !! 1
-                Piece White (Rook _) -> imgs !! 2
-                Piece White Knight -> imgs !! 3
-                Piece White (King _) -> imgs !! 4
-                Piece White Queen -> imgs !! 5
-                Piece Black (Pawn _) -> imgs !! 6
-                Piece Black Bishop -> imgs !! 7
-                Piece Black (Rook _) -> imgs !! 8
-                Piece Black Knight -> imgs !! 9
-                Piece Black (King _) -> imgs !! 10
-                Piece Black Queen -> imgs !! 11
-                Empty -> imgs !! 12
-        (False,False) -> case sqr of
-                Piece White (Pawn _) -> imgs !! 0
-                Piece White Bishop -> imgs !! 1
-                Piece White (Rook _) -> imgs !! 2
-                Piece White Knight -> imgs !! 3
-                Piece White (King _) -> imgs !! 4
-                Piece White Queen -> imgs !! 5
-                Piece Black (Pawn _) -> imgs !! 6
-                Piece Black Bishop -> imgs !! 7
-                Piece Black (Rook _) -> imgs !! 8
-                Piece Black Knight -> imgs !! 9
-                Piece Black (King _) -> imgs !! 10
-                Piece Black Queen -> imgs !! 11
-                Empty -> imgs !! 12
-        _ -> case sqr of
+        if even x /= even y 
+            then case sqr of
                 Piece White (Pawn _) -> imgs !! 13
                 Piece White Bishop -> imgs !! 14
                 Piece White (Rook _) -> imgs !! 15
@@ -106,13 +78,27 @@ renderBoard imgs brd =
                 Piece Black (King _) -> imgs !! 23
                 Piece Black Queen -> imgs !! 24
                 Empty -> imgs !! 25
+            else case sqr of
+                Piece White (Pawn _) -> imgs !! 0
+                Piece White Bishop -> imgs !! 1
+                Piece White (Rook _) -> imgs !! 2
+                Piece White Knight -> imgs !! 3
+                Piece White (King _) -> imgs !! 4
+                Piece White Queen -> imgs !! 5
+                Piece Black (Pawn _) -> imgs !! 6
+                Piece Black Bishop -> imgs !! 7
+                Piece Black (Rook _) -> imgs !! 8
+                Piece Black Knight -> imgs !! 9
+                Piece Black (King _) -> imgs !! 10
+                Piece Black Queen -> imgs !! 11
+                Empty -> imgs !! 12
         | x <- [0..7], y <- [0..7], sqr <- [(brd !! y) !! x]]
 
 
 getClicks :: Event -> Game -> IO Game
 getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
     mated <- isMated (gamePlayer game) (gameBoard game)
-    if trace (show mated) mated
+    if mated
     then do return $ game {gameState = GameOver}
     else case gameState game of
         Crd1 -> do
@@ -123,46 +109,14 @@ getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
             if isEmpty sqr
                 then return game
                 else if getColor sqr == clr
-                    then trace (show crd1) return $ game {gameState = Crd2, gameCoords = (crd1,(0,0))}
+                    then return $ game {gameState = Crd2, fstCrd = crd1}
                     else return game
         Crd2 -> do 
             let brd = gameBoard game
-                crd1 = fst $ gameCoords game
+                crd1 = fstCrd game
                 crd2 = parseCoord (x,y)
                 clr = gamePlayer game
-            case clr of
-                White -> case (crd1,crd2) of
-                    ((4,7),(6,7)) -> if canCastleK clr brd 
-                        then do
-                        newbrd <- kCastle clr brd
-                        if isChecked clr newbrd 
-                            then return $ game {gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                            else return $ game {gameBoard = newbrd, gamePlayer = other clr, gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                        else validMoveGame crd1 crd2 game
-                    ((4,7),(2,7)) -> if canCastleQ clr brd
-                        then do
-                        newbrd <- qCastle clr brd
-                        if isChecked clr newbrd 
-                            then return $ game {gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                            else return $ game {gameBoard = newbrd, gamePlayer = other clr, gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                        else validMoveGame crd1 crd2 game
-                    _ -> validMoveGame crd1 crd2 game
-                Black -> case (crd1,crd2) of
-                    ((4,0),(6,0)) -> if canCastleK clr brd 
-                        then do
-                        newbrd <- kCastle clr brd
-                        if isChecked clr newbrd 
-                            then return $ game {gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                            else return $ game {gameBoard = newbrd, gamePlayer = other clr, gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                        else validMoveGame crd1 crd2 game
-                    ((4,0),(2,0)) -> if canCastleQ clr brd
-                        then do
-                        newbrd <- qCastle clr brd
-                        if isChecked clr newbrd 
-                            then return $ game {gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                            else return $ game {gameBoard = newbrd, gamePlayer = other clr, gameState = Crd1, gameCoords = ((9,9),(9,9))}
-                        else validMoveGame crd1 crd2 game
-                    _ -> validMoveGame crd1 crd2 game
+            validMoveGame crd1 crd2 game
 getClicks _ game = return game
 
 parseCoord :: (Float,Float) -> Coordinate
@@ -179,13 +133,18 @@ validMoveGame crd1 crd2 game = do
                     Bishop -> bishopmoves crd1 clr brd
                     Queen -> queenmoves crd1 clr brd
                     (Rook _) -> rookmoves crd1 clr brd
-                    (King _) -> kingmoves crd1 clr brd
+                    (King _) -> kingmoves crd1 clr brd ++ 
+                                (case (canCastleK clr brd, canCastleQ clr brd) of
+                                    (True,_) -> if clr == White then [(6,7)] else [(6,0)]
+                                    (_,True) -> if clr == White then [(2,7)] else [(2,0)]
+                                    _ -> [])
         newbrd <- movePiece brd crd1 crd2
-        if crd2 `elem` pieceMoves        
+        if crd2 `elem` pieceMoves   
             then if isChecked clr newbrd
-                then return $ game {gameState = Crd1, gameCoords = ((9,9),(9,9))}
+                then return $ game {gameState = Crd1, fstCrd = (9,9)}
                 else do
-                    return $ game { gameBoard = newbrd, gamePlayer = other clr, gameState = Crd1}
-            else return $ game {gameState = Crd1, gameCoords = ((9,9),(9,9))}
+                    newbrd' <- promote clr newbrd
+                    return $ game { gameBoard = newbrd', gamePlayer = other clr, gameState = Crd1}
+            else return $ game {gameState = Crd1, fstCrd = (9,9)}
 
 move = undefined

@@ -106,7 +106,7 @@ printBlackBoard' x y []           =  ""
 
 {-changeSquare coordinate board -}
 changeSquare :: Coordinate -> Board -> Square -> Board
-changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
+changeSquare (x,0) (a:xs) square = changeSquare' x a square : xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
 
 changeSquare' :: Int -> [Square] -> Square -> [Square]
@@ -122,23 +122,38 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
               7 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
               _ -> getSquare (fst crd2,snd crd2 + 1) brd == Piece (other clr) (Pawn DoubleMove)
 
-  
+
+
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
         clr = getColor piece 
         newboard = changeSquare crd1 board Empty
-    if enPassant clr board crd1 crd2
-        then do
-            return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
-        else return $ changeSquare crd2 newboard (case piece of
-                        Piece clr (Rook Unmoved) -> Piece clr (Rook Moved)
-                        Piece clr (King Unmoved) -> Piece clr (King Moved)
-                        Piece clr (Pawn SingleMove) -> if abs (snd crd1 - snd crd2) == 2
-                                                            then Piece clr (Pawn DoubleMove)
-                                                            else Piece clr (Pawn SingleMove)
-                        Piece clr (Pawn DoubleMove) -> Piece clr (Pawn SingleMove)
-                        _ -> piece)
+    case (crd1,crd2,canCastleK clr board,canCastleQ clr board) of
+        ((4,0),(6,0),True,_) -> return $ kCastle clr board
+        ((4,0),(2,0),_,True) -> return $ qCastle clr board
+        ((4,7),(6,7),True,_) -> return $ kCastle clr board
+        ((4,7),(2,7),_,True) -> return $ qCastle clr board
+        _                    -> if enPassant clr board crd1 crd2
+                                    then do
+                                        return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
+                                    else return $ changeSquare crd2 newboard (case piece of
+                                                    Piece clr (Rook Unmoved) -> Piece clr (Rook Moved)
+                                                    Piece clr (King Unmoved) -> Piece clr (King Moved)
+                                                    Piece clr (Pawn SingleMove) -> if abs (snd crd1 - snd crd2) == 2
+                                                                                        then Piece clr (Pawn DoubleMove)
+                                                                                        else Piece clr (Pawn SingleMove)
+                                                    Piece clr (Pawn DoubleMove) -> Piece clr (Pawn SingleMove)
+                                                    _ -> piece)
+    where   kCastle White brd = do 
+                changeSquare crd1 (changeSquare (5,7) (changeSquare (7,7) (changeSquare crd2 brd (Piece White (King Moved))) Empty) (Piece White (Rook Moved))) Empty
+            kCastle Black brd = do 
+                changeSquare crd1 (changeSquare (5,0) (changeSquare (7,0) (changeSquare crd2 brd (Piece Black (King Moved))) Empty) (Piece Black (Rook Moved))) Empty
+            qCastle White brd = do 
+                changeSquare crd1 (changeSquare (3,7) (changeSquare (0,7) (changeSquare crd2 brd (Piece White (King Moved))) Empty) (Piece White (Rook Moved))) Empty
+            qCastle Black brd = do 
+                changeSquare crd1 (changeSquare (3,0) (changeSquare (0,0) (changeSquare crd2 brd (Piece Black (King Moved))) Empty) (Piece Black (Rook Moved))) Empty
+    
 
 removeDoublePawn :: PColor -> Board -> Board 
 removeDoublePawn clr brd = if null doublepawn then brd else changeSquare (head doublepawn) brd Empty
@@ -245,13 +260,9 @@ promote :: PColor -> Board -> IO Board
 promote clr brd = do
             if null (getPromotedPawn clr brd)
                 then return brd
-                else do 
-                    piece <- askPromote
-                    return $ changeSquare (head (getPromotedPawn clr brd)) brd (case piece of
-                                                        Queen -> Piece clr Queen 
-                                                        (Rook _) -> Piece clr (Rook Moved) 
-                                                        Bishop -> Piece clr Bishop 
-                                                        Knight -> Piece clr Knight)
+                else do
+                    return $ changeSquare (head (getPromotedPawn clr brd)) brd (Piece clr Queen)
+                                                        
 
 askPromote :: IO PType
 askPromote = do
@@ -267,7 +278,7 @@ askPromote = do
 
 kCastle :: PColor -> Board -> IO Board
 kCastle White brd = do 
-    newbrd <-movePiece brd (4,7) (6,7)
+    newbrd <- movePiece brd (4,7) (6,7)
     movePiece newbrd (7,7) (5,7)
 kCastle Black brd = do 
     newbrd <- movePiece brd (4,0) (6,0)
