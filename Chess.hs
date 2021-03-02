@@ -152,23 +152,39 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
           isNotSelfDoubleMove = getSquare crd1 brd /= Piece clr (Pawn DoubleMove) && abs (snd crd1 - snd crd2) /= 2 
           
 
-  
+
+
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
         clr = getColor piece 
         newboard = changeSquare crd1 board Empty
-    if enPassant clr board crd1 crd2
-        then do
-            return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
-        else return $ changeSquare crd2 newboard (case piece of
-                        Piece clr (Rook Unmoved) -> Piece clr (Rook Moved)
-                        Piece clr (King Unmoved) -> Piece clr (King Moved)
-                        Piece clr (Pawn SingleMove) -> if abs (snd crd1 - snd crd2) == 2
-                                                            then Piece clr (Pawn DoubleMove)
-                                                            else Piece clr (Pawn SingleMove)
-                        Piece clr (Pawn DoubleMove) -> Piece clr (Pawn SingleMove)
-                        _ -> piece)
+    case (crd1,crd2,canCastleK clr board,canCastleQ clr board) of
+        ((4,0),(6,0),True,_) -> return $ kCastle clr board
+        ((4,0),(2,0),_,True) -> return $ qCastle clr board
+        ((4,7),(6,7),True,_) -> return $ kCastle clr board
+        ((4,7),(2,7),_,True) -> return $ qCastle clr board
+        _                    -> 
+            if enPassant clr board crd1 crd2
+                then do
+                    return $ changeSquare crd2 (removeDoublePawn clr newboard) piece
+                else return $ changeSquare crd2 newboard (case piece of
+                                Piece clr (Rook Unmoved) -> Piece clr (Rook Moved)
+                                Piece clr (King Unmoved) -> Piece clr (King Moved)
+                                Piece clr (Pawn SingleMove) -> if abs (snd crd1 - snd crd2) == 2
+                                                                    then Piece clr (Pawn DoubleMove)
+                                                                    else Piece clr (Pawn SingleMove)
+                                Piece clr (Pawn DoubleMove) -> Piece clr (Pawn SingleMove)
+                                _ -> piece)
+    where   kCastle White brd = do 
+                changeSquare crd1 (changeSquare (5,7) (changeSquare (7,7) (changeSquare crd2 brd (Piece White (King Moved))) Empty) (Piece White (Rook Moved))) Empty
+            kCastle Black brd = do 
+                changeSquare crd1 (changeSquare (5,0) (changeSquare (7,0) (changeSquare crd2 brd (Piece Black (King Moved))) Empty) (Piece Black (Rook Moved))) Empty
+            qCastle White brd = do 
+                changeSquare crd1 (changeSquare (3,7) (changeSquare (0,7) (changeSquare crd2 brd (Piece White (King Moved))) Empty) (Piece White (Rook Moved))) Empty
+            qCastle Black brd = do 
+                changeSquare crd1 (changeSquare (3,0) (changeSquare (0,0) (changeSquare crd2 brd (Piece Black (King Moved))) Empty) (Piece Black (Rook Moved))) Empty
+    
 {-removeDoublePawn clr brd
 a function that changes all squares containing a doublePawn of the opposite color to a empty square
    RETURNS: updated board
@@ -215,18 +231,13 @@ A function that performs one turn for a clr by calling on multiple functions tha
 -}       
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
-    if crd1 == (99,99)
-        then kingSideCastle clr brd
-        else if crd1 == (-99,-99)
-            then queenSideCastle clr brd
-            else do
-                if not (isEmpty sqrcord1) && getColor sqrcord1 == clr
-                    then validMove clr (getType sqrcord1) crd1 crd2 brd
-                    else do 
-                            putStrLn $ "No " ++ show clr ++ " piece at coordinate"
-                            (crd1,crd2) <- askMove
-                            playerTurn crd1 crd2 clr brd
-                    where sqrcord1 = getSquare crd1 brd
+    if not (isEmpty sqrcord1) && getColor sqrcord1 == clr
+        then validMove clr (getType sqrcord1) crd1 crd2 brd
+        else do 
+                putStrLn $ "No " ++ show clr ++ " piece at coordinate"
+                (crd1,crd2) <- askMove
+                playerTurn crd1 crd2 clr brd
+        where sqrcord1 = getSquare crd1 brd
 
 
 
@@ -254,9 +265,8 @@ makeMove clr brd = do
         playerTurn crd1 crd2 clr brd
     
 
-validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]] ++ ["O-O","O-O-O"]
-{-validMove clr piece crd1 crd2 brd
- a fucntion that checks is a players inputs results in a valid move-}
+validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
+
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2
@@ -266,7 +276,7 @@ validMove clr piece crd1 crd2 brd = do
                 Bishop -> bishopmoves crd1 clr brd
                 Queen -> queenmoves crd1 clr brd
                 (Rook _) -> rookmoves crd1 clr brd
-                (King _) -> kingmoves crd1 clr brd
+                (King _) -> kingmoves crd1 clr brd ++ castlemoves clr brd
         if crd2 `elem` pieceMoves        
             then if isChecked clr newbrd
                 then do
@@ -296,15 +306,13 @@ promote :: PColor -> Board -> IO Board
 promote clr brd = do
             if null (getPromotedPawn clr brd)
                 then return brd
-                else do 
+                else do
                     piece <- askPromote
-                    return $ changeSquare (head (getPromotedPawn clr brd)) brd (case piece of
-                                                        Queen -> Piece clr Queen 
-                                                        (Rook _) -> Piece clr (Rook Moved) 
-                                                        Bishop -> Piece clr Bishop 
-                                                        Knight -> Piece clr Knight)
-{-askPromte
-a function that ask the player what piece they want to promote-}
+                    return $ changeSquare (head (getPromotedPawn clr brd)) brd (Piece clr piece)
+                                                        
+{-askPromote
+    a function to prompt the player for a piece and then returns players choice
+-}
 askPromote :: IO PType
 askPromote = do
     putStrLn "What do you want to promote to?"
@@ -314,88 +322,6 @@ askPromote = do
         then return $ strToPiece promote
         else askPromote
 
-
-
-{-kCastle clr brd
-a function that changes the coordinates where the king and rook is placed at to their positions after castling on the kingside. 
-  RETURNS: a new board with two coordinates changed.
-  EXAMPLES: kCastle White castleBoard = [♖, , , , ,♖,♔, ] Note: function prints out full board. This is the only list that changes. 
-
--}
-kCastle :: PColor -> Board -> IO Board
-kCastle White brd = do 
-    newbrd <-movePiece brd (4,7) (6,7)
-    movePiece newbrd (7,7) (5,7)
-kCastle Black brd = do 
-    newbrd <- movePiece brd (4,0) (6,0)
-    movePiece newbrd (7,0) (5,0)
-{-QCastle clr brd
-a function that changes the coordinates where the king and rook is placed at to their positions after castling on the queenside. 
-  RETURNS: a new board with two coordinates changed.
-  EXAMPLES: qCastle White castleBoard = [ , ,♔,♖, , , ,♖] Note: function prints out full board. This is the only list that changes. 
-
--}
-qCastle :: PColor -> Board -> IO Board
-qCastle White brd = do 
-    newbrd <- movePiece brd (4,7) (2,7)
-    movePiece newbrd (0,7) (3,7)
-qCastle Black brd = do 
-    newbrd <- movePiece brd (4,0) (2,0)
-    movePiece newbrd (0,0) (3,0)
-
-{-canCastleK clr brd
-A function that checks if a specific coordinate is not an element of the opposites colors possible moves and checks clearKSide function for the same color. 
-    RETURNS: True or False
-    EXAMPLES: 
--}
-canCastleK :: PColor -> Board -> Bool
-canCastleK White brd = not ((5,7) `elem` possibleMoves Black brd) && clearKSide White brd 
-canCastleK Black brd = not ((5,0) `elem` possibleMoves White brd) && clearKSide Black brd 
-
-canCastleQ :: PColor -> Board -> Bool
-canCastleQ White brd = not ((3,7) `elem` possibleMoves Black brd) && clearQSide White brd
-canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide Black brd
-
-kingSideCastle :: PColor -> Board -> IO Board
-kingSideCastle clr brd = do
-    if isChecked clr brd 
-        then do
-            putStrLn "You can't castle, you are in check "
-            makeMove clr brd 
-        else 
-            if canCastleK clr brd 
-                then do
-                    newbrd <- kCastle clr brd 
-                    if isChecked clr newbrd 
-                        then do
-                            putStrLn "You can't castle, you will be in check "
-                            makeMove clr brd
-                        else return newbrd 
-                else do
-                        putStrLn "You can't castle, castling is blocked "
-                        makeMove clr brd
-
-queenSideCastle :: PColor -> Board -> IO Board
-queenSideCastle clr brd = do
-    if isChecked clr brd 
-        then do
-            putStrLn "You cant castle, you are in check "
-            (cord1,cord2) <- askMove
-            playerTurn cord1 cord2 clr brd 
-        else 
-            if canCastleQ clr brd 
-                then do
-                    newbrd <- qCastle clr brd 
-                    if isChecked clr newbrd 
-                        then do
-                            putStrLn "You cant castle, you will be in check "
-                            (cord1,cord2) <- askMove
-                            playerTurn cord1 cord2 clr brd
-                        else return newbrd
-                else do
-                        putStrLn "You cant castle, castling is blocked "
-                        (cord1,cord2) <- askMove
-                        playerTurn cord1 cord2 clr brd
 
 testBoard :: Board
 testBoard = [[Empty,Piece Black Knight,Piece Black Bishop,Piece Black (King Unmoved),Piece Black Queen ,Piece Black Bishop,Piece Black Knight,Piece Black (Rook Unmoved )],

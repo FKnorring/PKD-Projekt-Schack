@@ -275,7 +275,23 @@ queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
             kingmoves (3,3) Black initBoard = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]-}
 kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 kingmoves (x,y) clr brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y))
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y)) 
+
+
+castlemoves :: PColor -> Board -> [(Coordinate)]
+castlemoves clr brd = case (canCastleK clr brd, canCastleQ clr brd) of
+                                    (True,_) -> if clr == White then [(6,7)] else [(6,0)]
+                                    (_,True) -> if clr == White then [(2,7)] else [(2,0)]
+                                    _ -> []
+
+
+canCastleK :: PColor -> Board -> Bool
+canCastleK White brd = not ((5,7) `elem` possibleMoves Black brd) && clearKSide White brd 
+canCastleK Black brd = not ((5,0) `elem` possibleMoves White brd) && clearKSide Black brd 
+
+canCastleQ :: PColor -> Board -> Bool
+canCastleQ White brd = not ((3,7) `elem` possibleMoves Black brd) && clearQSide White brd
+canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide Black brd
 
 {-kingmoves' (x,y)
   Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
@@ -320,7 +336,7 @@ horseMoves (x,y) clr brd = filter
             horseMoves' (3,3)  = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
 -}
 horseMoves' :: Coordinate -> [Coordinate]
-horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y+1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
+horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y-1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
 
 {-getKing clr brd
 a function that finds a king Moved or King Unmoved if White or Black on the board and returns its coordinate.
