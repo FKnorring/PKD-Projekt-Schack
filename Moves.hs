@@ -391,12 +391,12 @@ clearKSide clr brd = (clearKSide' clr brd) == [(Piece clr (King Unmoved)),(Empty
 
 
 
-{-clearKSide' clr brd
+{-clearQSide' clr brd
 a function that maps all the squares for white on the coordinate (0,7) to (4,7) into a list of squares
 and maps all coordinates (0,0) to (4,0) into a list of squares for black.
   RETURNS: a list of squares containg a piece or empty.
-  EXAMPLES: clearKSide' White castleBoard = [[♖, , , ,♔]
-            clearKSide' Black initBoard = [♜,♞,♝,♛,♚]
+  EXAMPLES: clearQSide' White castleBoard = [[♖, , , ,♔]
+            clearQSide' Black initBoard = [♜,♞,♝,♛,♚]
 
 -}
 clearQSide' :: PColor ->  Board   -> [Square]
