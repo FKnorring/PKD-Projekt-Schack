@@ -116,10 +116,10 @@ changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
 enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) && getSquare crd1 brd /= (Piece clr (Pawn DoubleMove )) && abs (snd crd1 - snd crd2) /= 2
     where front = case snd crd2 of
-              0 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
+              0 -> False
               _ -> getSquare (fst crd2,snd crd2 - 1) brd == Piece (other clr) (Pawn DoubleMove)
           back = case snd crd2 of
-              7 -> getSquare crd2 brd == Piece (other clr) (Pawn DoubleMove)
+              7 -> False
               _ -> getSquare (fst crd2,snd crd2 + 1) brd == Piece (other clr) (Pawn DoubleMove)
 
   
