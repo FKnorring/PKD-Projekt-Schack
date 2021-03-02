@@ -414,7 +414,7 @@ testBoard2 = [[Piece White (Pawn SingleMove),Piece Black Knight,Piece Black Bish
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 
-{-performTests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16]
+{- performTests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16]
 
 test1 = TestCase $ assertEqual "Looks if the safe Black king is in check on startboard" False (isChecked White initBoard)
 test2 = TestCase $ assertEqual "Looks if the white king is in check on testboard" True (isChecked White testBoard)
@@ -445,6 +445,10 @@ test14 = TestCase $ assertEqual "test the black kings possible moves on testBoar
 
 test15 = TestCase $ assertEqual "test coordstr function for a number of coordinates" ["a8","b8","d5","e3","h1","g3"] (map coordToStr [(0,0),(1,0),(3,3),(4,5),(7,7),(6,5)])
 
-test16 = TestCase $ assertEqual "test strTocord function for a number of stings" [(0,8),(1,1),(2,3),(1,5)] (map strToCoord ["a0", "b7","c5","b3"]
+test16 = TestCase $ assertEqual "test strTocord function for a number of stings" [(0,8),(1,1),(2,3),(1,5)] (map strToCoord ["a0", "b7","c5","b3"])
 
-test17 = TestCase $ assertEqual "Test if enPassant returns coorect bool for specif coordiante (6,3) (7,2) returns True for testBoard" True ( enPassant White testBoard (6,3) (7,2)))-}
+
+test17 = TestCase $ assertEqual "Test if enPassant returns coorect bool for specif coordiante (6,3) (7,2) returns True for testBoard" True (enPassant White testBoard (6,3) (7,2))
+    -}
+   
+   
