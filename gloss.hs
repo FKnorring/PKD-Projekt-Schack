@@ -56,7 +56,7 @@ bsFunc _ = return
 
 renderGame :: [Picture] -> Game -> IO Picture 
 renderGame imgs game = case gameState game of
-    GameOver -> return $ Text (show (gamePlayer game) ++ " is mated")
+    GameOver -> return $ scale (0.2) (0.2) $ Text $ show (gamePlayer game) ++ " is mated"
     _ -> return $ renderBoard imgs (gameBoard game)
        
 
@@ -107,10 +107,14 @@ getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
                 clr = gamePlayer game
                 sqr = getSquare crd1 brd
             if isEmpty sqr
-                then return game
+                then do
+                    putStrLn "No piece at that square!"
+                    return game
                 else if getColor sqr == clr
                     then return $ game {gameState = Crd2, fstCrd = crd1}
-                    else return game
+                    else do
+                        putStrLn $ "No " ++ show clr ++ " piece at that square!"
+                        return game
         Crd2 -> do 
             let brd = gameBoard game
                 crd1 = fstCrd game
@@ -141,10 +145,14 @@ validMoveGame crd1 crd2 game = do
         newbrd <- movePiece brd crd1 crd2
         if crd2 `elem` pieceMoves   
             then if isChecked clr newbrd
-                then return $ game {gameState = Crd1, fstCrd = (9,9)}
+                then do
+                    putStrLn "Invalid Move!"
+                    return $ game {gameState = Crd1, fstCrd = (9,9)}
                 else do
                     newbrd' <- promote clr newbrd
                     return $ game { gameBoard = newbrd', gamePlayer = other clr, gameState = Crd1}
-            else return $ game {gameState = Crd1, fstCrd = (9,9)}
+            else do
+                putStrLn "Invalid move!"
+                return $ game {gameState = Crd1, fstCrd = (9,9)}
 
 move = undefined

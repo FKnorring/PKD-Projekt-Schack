@@ -58,9 +58,6 @@ getType (Piece _ Queen) = Queen
 getSquare :: Coordinate -> Board -> Square
 getSquare (x,y) board = (board !! y) !! x
 
-
-
-
 other :: PColor -> PColor
 other White = Black
 other Black = White

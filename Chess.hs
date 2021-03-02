@@ -110,7 +110,7 @@ changeSquare (x,0) (a:xs) square = changeSquare' x a square : xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
 
 changeSquare' :: Int -> [Square] -> Square -> [Square]
-changeSquare' 0 (a:xs) square = square:xs 
+changeSquare' 0 (a:xs) square = square : xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 
 enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
