@@ -5,10 +5,15 @@ import Debug.Trace
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
+{-data State represents the state of the game, 
+    if the state is either Crd1 or Crd2 the game is running
+    and awaiting the first coordinate if state is Crd1,
+    the second if the state is Crd2
+    Mate and Stalemate is the game over state of the game-}
 data State = Crd1 | Crd2 | Mate | Stalemate deriving (Eq,Show)
 
-type Coords = (Coordinate,Coordinate)
-
+{-data Game is a record containg information about the board
+    who is playing what state the game is in and what the first coordinate the player specified is-}
 data Game = Game { gameBoard :: Board,
                    gamePlayer :: PColor,
                    gameState :: State,
@@ -21,6 +26,18 @@ initGame = Game { gameBoard = initBoard, gamePlayer = White, gameState = Crd1, f
 
 main :: IO ()
 main = do
+    playIO window white 30 initGame renderGame getClicks (\_ -> return)
+
+{-renderGame game
+    a function to render the Board
+    RETURNS: an IO Picture action containing the picture with all the
+
+-}
+renderGame :: Game -> IO Picture 
+renderGame game = case gameState game of
+    Mate -> return $ scale 0.2 0.2 $ Text $ show (gamePlayer game) ++ " is mated"
+    Stalemate -> return $ scale 0.2 0.2 $ Text "Stalemate"
+    _ -> do
     whitepawn <- loadBMP "imgs/whitepawn.bmp"
     whitebishop <- loadBMP "imgs/whitebishop.bmp"
     whiterook <- loadBMP "imgs/whiterook.bmp"
@@ -49,16 +66,7 @@ main = do
     empty' <- loadBMP "imgs/empty'.bmp"
     let pieces = [whitepawn,whitebishop,whiterook,whiteknight,whiteking,whitequeen,blackpawn,blackbishop,blackrook,blackknight,blackking,blackqueen,empty,
                   whitepawn',whitebishop',whiterook',whiteknight',whiteking',whitequeen',blackpawn',blackbishop',blackrook',blackknight',blackking',blackqueen',empty']
-    playIO window white 30 initGame (renderGame pieces) getClicks bsFunc
-
-bsFunc :: Float -> Game -> IO Game
-bsFunc _ = return
-
-renderGame :: [Picture] -> Game -> IO Picture 
-renderGame imgs game = case gameState game of
-    Mate -> return $ scale 0.2 0.2 $ Text $ show (gamePlayer game) ++ " is mated"
-    Stalemate -> return $ scale 0.2 0.2 $ Text "Stalemate"
-    _ -> return $ renderBoard imgs (gameBoard game)
+    return $ renderBoard pieces (gameBoard game)
        
 
 renderBoard :: [Picture] -> Board -> Picture
@@ -105,15 +113,15 @@ getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
     else case gameState game of
         Crd1 -> do
             let crd1 = parseCoord (x,y)
-                brd = gameBoard game
                 clr = gamePlayer game
+                brd = resetDoubleMove clr (gameBoard game)
                 sqr = getSquare crd1 brd
             if isEmpty sqr
                 then do
                     putStrLn "No piece at that square!"
                     return game
                 else if getColor sqr == clr
-                    then return $ game {gameState = Crd2, fstCrd = crd1}
+                    then return $ game {gameBoard = brd, gameState = Crd2, fstCrd = crd1}
                     else do
                         putStrLn $ "No " ++ show clr ++ " piece at that square!"
                         return game

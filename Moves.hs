@@ -3,7 +3,7 @@ import Board
 import Debug.Trace
 
 {-validSquares
-a function that filters a list of coordinates with all the possible coordiantes on the board
+    a function that filters a list of coordinates with all the possible coordiantes on the board
 -}
 validSquares :: [Coordinate] -> [Coordinate]
 validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
@@ -19,7 +19,6 @@ validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
             pawnMoves (2,3) Black initBoard = [(2,4)]
  -}
 pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT:
 pawnMoves (x,6) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
     (pawnMoves' (x,6) White) ++ if isEmpty (getSquare (x, 5) brd) then (x,5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)]) else []
@@ -284,7 +283,7 @@ kingmoves (x,y) clr brd = filter
     EXAMPLES: castlemoves White initBoard == []
               casltemoves Black castleBoard == [(6,0),(2,0)]
 -}
-castlemoves :: PColor -> Board -> [(Coordinate)]
+castlemoves :: PColor -> Board -> [Coordinate]
 castlemoves clr brd = case (canCastleK clr brd, canCastleQ clr brd) of
                                     (True,True) -> if clr == White then [(6,7),(2,7)] else [(6,0),(2,0)]
                                     (True,_) -> if clr == White then [(6,7)] else [(6,0)]
