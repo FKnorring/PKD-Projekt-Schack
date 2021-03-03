@@ -3,10 +3,10 @@ import Board
 import Moves
 
 
+
 --import Test.HUnit
 {-main
- a function to start the game
--}
+A function to start the game-}
 main :: IO () 
 main = play initBoard White 
 
@@ -61,7 +61,7 @@ initBoard = [[Piece Black (Rook Unmoved ),Piece Black Knight,Piece Black Bishop,
 
 {-printBoard color board
     a function that prints a board to the terminal for colors perspective
-    PRE: type in "chcp.com 65001" in terminal before ghci so u it can print the pieces. 
+    PRE: type in "chcp.com 65001" in terminal before ghci so u it can print the pieces. If you are on Windows
     RETURNS: an IO action that prints multiple lines of strings 
 -}
 printBoard :: PColor -> Board -> IO ()
@@ -209,7 +209,7 @@ play brd clr = do
             play newbrd' $ other clr
 
 {-playerTurn crd1 crd2 clr brd
-    a function that performs one turn for a clr on brd by checking if a move from crd1 to crd2 is legal
+    a function that performs one turn for a color on board by checking if a move from crd1 to crd2 is legal.
 -}       
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
@@ -235,7 +235,7 @@ askMove = do
             askMove
 
 {-makeMove clr brd
-    a function that asks the clr for two coordinates then tries to make said move-}
+    a function that a promts clr for two coordinates and then sends it to playerTurn-}
 makeMove :: PColor -> Board -> IO Board
 makeMove clr brd = do
         (crd1,crd2) <- askMove
@@ -243,6 +243,7 @@ makeMove clr brd = do
     
 
 validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
+
 {-validMove color piece firstcoordinate secondcoordinate board
     a function to make a move for color with piece from first coordinate to second coordinate on board if it is valid
     RETURNS: a new board if a valid move is made
@@ -351,7 +352,7 @@ test9 = TestCase $ assertEqual "checks if promotedPawn function finds the correc
 
 test10 = TestCase $ assertEqual "checks if promotedPawn function finds the correct promotedPawn on the testBoard" [] (getPromotedPawn Black testBoard)
 
-test11 = TestCase $ assertEqual "Checks the White horse all possible moves on the startboard" [(2,5),(0,5)] (knightmoves (1,7) White initBoard)
+test11 = TestCase $ assertEqual "Checks the White horse all possible moves on the startboard" [(2,5),(0,5)] (knightMoves (1,7) White initBoard)
 
 test12 = TestCase $ assertEqual "finds the square the pawn can move to make the move enPassant" [(7,2)] (enPassantSquare (6,3) White testBoard)
 

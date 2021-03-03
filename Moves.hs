@@ -269,6 +269,17 @@ kingmoves (x,y) clr brd = filter
 kingmoves' :: Coordinate -> [Coordinate]
 kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
+{-kingmoves' (x,y)
+  Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates
+  EXAMPLES: kingmoves' (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
+            kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
+            kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
+-}
+kingmoves' :: Coordinate -> [Coordinate]
+kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+
 {-castlemoves color board
     a function to get the coordinate for castling with color on board if is is availible
     RETURNS: if castling is availible it returns a list of the coordinates where the king can move to castle
@@ -307,7 +318,6 @@ canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide 
 
 {-knightmoves (x,y) clr brd
   a function that checks all possible moves for clr knight on (x,y) on brd and puts them in a list of coordinates
-  PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates
   EXAMPLES: knightmoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
             knightmoves (2,5) Black initBoard = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
