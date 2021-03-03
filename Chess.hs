@@ -96,7 +96,7 @@ printBoard clr brd = putStrLn (case clr of
 {-printWhiteBoard'
 a function that makes a list of squares to a playable board-}
 printWhiteBoard' :: Int -> Int -> Board -> String 
---VARIANT: 
+--VARIANT: Lenght of Board
 printWhiteBoard' 1 8 ((a:xs):xss) = "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" "   ++ printWhiteBoard' 2 8 (xs:xss)
 printWhiteBoard' 1 y ((a:xs):xss) = show y++" ║"++show a++" "                         ++ printWhiteBoard' 2 y (xs:xss)
 printWhiteBoard' x y ((a:xs):xss) =  "║" ++ show a ++" "                              ++ printWhiteBoard' (x+1) y (xs:xss)
@@ -105,7 +105,7 @@ printWhiteBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬═�
 printWhiteBoard' x y []           =  "   a  b  c  d  e  f  g  h"
 
 printBlackBoard' :: Int -> Int -> Board -> String 
---VARIANT: 
+--VARIANT: Length of Board
 printBlackBoard' 1 8 ((a:xs):xss) = printBlackBoard' 2 8 (xs:xss) ++ ("║" ++ show a++" ║" ++  "\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n    h  g  f  e  d  c  b  a\n") 
 printBlackBoard' 1 y ((a:xs):xss) = printBlackBoard' 2 y (xs:xss) ++ ("║"++show a++" ║ ")                       
 printBlackBoard' x y ((a:xs):xss) = printBlackBoard' (x+1) y (xs:xss) ++ ("║"++show a++" ")                                
@@ -121,7 +121,7 @@ printBlackBoard' x y []           =  ""
  --VARIANT: Length of board ?
 
 changeSquare :: Coordinate -> Board -> Square -> Board
---VARIANT: 
+--VARIANT: y
 changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
 
@@ -131,7 +131,7 @@ changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
  RETURNS: A list of squares -}
 --VARIANT: The first int in coordinate.
 changeSquare' :: Int -> [Square] -> Square -> [Square]
---VARIANT:
+--VARIANT: x
 changeSquare' 0 (a:xs) square = square:xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 

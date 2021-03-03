@@ -87,7 +87,7 @@ a function that takes the coordiantes, color of the piece and a board and return
 
 -}
 toFront :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT:
+--VARIANT: y
 toFront (x,y) clr brd 
     | y-1 == -1 = []
     | isEmpty $ getSquare (x,y-1) brd = (x,y-1): toFront (x,y-1) clr brd 
@@ -106,7 +106,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             
             -}
 toBack :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT: 
+--VARIANT: 8-y
 toBack (x,y) clr brd 
     | y+1 == 8 = []
     | isEmpty $ getSquare (x,y+1) brd = (x,y+1): toBack (x,y+1) clr brd 
@@ -123,7 +123,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             toLeft (4,4) White initBoard = [(3,4),(2,4),(1,4),(0,4)]
             -}
 toLeft :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT:
+--VARIANT: x
 toLeft (x,y) clr brd 
     | x-1 == -1 = []
     | isEmpty $ getSquare (x-1,y) brd = (x-1,y): toLeft (x-1,y) clr brd 
@@ -140,7 +140,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             toRight (4,4) White initBoard = [(5,4),(6,4),(7,4)]
             -}
 toRight :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT:
+--VARIANT: 8-x
 toRight (x,y) clr brd 
     | x+1 == 8 = []
     | isEmpty $ getSquare (x+1,y) brd = (x+1,y): toRight (x+1,y) clr brd 
@@ -157,7 +157,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             diarBR (4,4) White initBoard = [(5,5)]
             -}
 diagBR :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT:
+--VARIANT: 8-x && 8-y
 diagBR (x,y) clr brd 
     | x+1 == 8 = []
     | y+1 == 8 = []
@@ -176,7 +176,7 @@ a function that takes the coordiantes, color of the piece and a board and return
             diarFR (4,4) White initBoard = [(5,3),(6,2),(7,1)]
             -}
 diagFR :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT:
+--VARIANT: 8-x && y
 diagFR (x,y) clr brd 
     | x+1 == 8 = []
     | y-1 == -1 = []
@@ -195,13 +195,14 @@ a function that takes the coordiantes, color of the piece and a board and return
             diarBL (4,4) White initBoard = [(3,5)]
             -}
 diagBL :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT: 
+--VARIANT: x && 8-y
 diagBL (x,y) clr brd 
     | x-1 == -1 = []
     | y+1 == 8 = []
     | isEmpty $ getSquare (x-1,y+1) brd = (x-1,y+1): diagBL (x-1,y+1) clr brd 
     | getColor (getSquare (x-1,y+1) brd) == clr = []
     | otherwise = [(x-1,y+1)]
+
 
 {-diaFL(x,y) clr brd
 a function that takes the coordiantes, color of the piece and a board and returns a list of all possible coordinates the piece can move diagonally front left on the board including one square occupied by a diiferent color piece
@@ -212,9 +213,8 @@ a function that takes the coordiantes, color of the piece and a board and return
             diarFL (4,4) Black initBoard = [(3,3),(2,2)]
             diarFL (4,4) White initBoard = [(3,3),(2,2),(1,1)]
             -}
-
 diagFL :: Coordinate -> PColor -> Board -> [Coordinate]
---VARIANT:
+--VARIANT: x && y
 diagFL (x,y) clr brd 
     | x-1 == -1 = []
     | y-1 == -1 = []
@@ -222,18 +222,20 @@ diagFL (x,y) clr brd
     | getColor (getSquare (x-1,y-1) brd) == clr = []
     | otherwise = [(x-1,y-1)]
 
-{- a function that checks all possible moves for the rook and puts them in a list of coordinates
+
+{- rookmoves (x,y) clr brd
+a function that checks all possible moves for the rook and puts them in a list of coordinates
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS: A list of tuples containg two ints
   EXAMPLES: rookmoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4)]
             rookmoves (4,4) Black initBoard = [(4,3),(4,2),(4,5),(4,6),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4)]
             rookmoves (3,3) White initBoard = [(3,2),(3,1),(3,4),(3,5),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3)]
             rookmoves (3,3) Black initBoard = [(3,2),(3,4),(3,5),(3,6),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3)]
-
 -}
-
 rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
+
+
 {-
 bishopmoves (x,y) clr brd
 a function that checks all possible moves for the bishop and puts them in a list of coordinates
@@ -244,9 +246,6 @@ a function that checks all possible moves for the bishop and puts them in a list
             bishopmoves (3,3) White initBoard = [(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
             bishopmoves (3,3) Black initBoard = [(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
 -}
-
-
-
 bishopmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 bishopmoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
 
