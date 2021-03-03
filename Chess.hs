@@ -108,7 +108,11 @@ printBlackBoard' x y []           =  ""
 
 {-changeSquare coordinate board square
  a function that takes a coordinate from a board and changes whats on that coordinate to square
- RETURNS: A new board where square is at coordinate.-}
+ RETURNS: A new board where square is at coordinate.
+ EXAMPLES: head $ changeSquare (0,0) initBoard (Piece Black Knight) = [♞,♞,♝,♛,♚,♝,♞,♜]
+           head $ changeSquare (0,0) initBoard (Piece Black Queen) = [♛,♞,♝,♛,♚,♝,♞,♜]
+ 
+ -}
 
 changeSquare :: Coordinate -> Board -> Square -> Board
 --VARIANT: y
