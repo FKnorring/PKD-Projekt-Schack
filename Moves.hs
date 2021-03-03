@@ -234,6 +234,7 @@ diagFL (x,y) clr brd
 
 rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
+
 {-
 bishopmoves (x,y) clr brd
 a function that checks all possible moves for the bishop and puts them in a list of coordinates
@@ -244,9 +245,6 @@ a function that checks all possible moves for the bishop and puts them in a list
             bishopmoves (3,3) White initBoard = [(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
             bishopmoves (3,3) Black initBoard = [(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
 -}
-
-
-
 bishopmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 bishopmoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
 

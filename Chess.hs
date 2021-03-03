@@ -82,19 +82,20 @@ initBoard = [[Piece Black (Rook Unmoved ),Piece Black Knight,Piece Black Bishop,
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 {-printBoard color board
-    a function that prints a board to the terminal, prints from whites perspecitve if the first Argument is White, if its Black it prints
-    from blacks perspective
+    a function that prints a board to the terminal for colors perspective
     PRE: type in "chcp.com 65001" in terminal before ghci so u it can print the pieces. 
-    RETURNS: Multiple strings in the terminal
-    EXAMPLES: 
+    RETURNS: an IO action that prints multiple lines of strings 
 -}
 printBoard :: PColor -> Board -> IO ()
 printBoard clr brd = putStrLn (case clr of
         White -> printWhiteBoard' 1 8 brd
         Black -> printBlackBoard' 1 8 brd)
 
-{-printWhiteBoard'
-a function that makes a list of squares to a playable board-}
+{-printWhiteBoard' x y board
+    a function that turns a board into a string
+    PRE: x = 1, y = 8 to make a correct board
+    RETURNS: a string of the board
+-}
 printWhiteBoard' :: Int -> Int -> Board -> String 
 --VARIANT:
 printWhiteBoard' 1 8 ((a:xs):xss) = "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" "   ++ printWhiteBoard' 2 8 (xs:xss)
@@ -104,6 +105,11 @@ printWhiteBoard' _ 1 ([]:xs)      =  "║\n  ╚══╩══╩══╩═�
 printWhiteBoard' x y ([]:xs)      =  "║\n  ╠══╬══╬══╬══╬══╬══╬══╬══╣\n"               ++ printWhiteBoard' 1 (y-1) xs
 printWhiteBoard' x y []           =  "   a  b  c  d  e  f  g  h"
 
+{-printBlackBoard' x y board
+    a function that turns a board into a string
+    PRE: x = 1, y = 8 to make a correct board
+    RETURNS: a string of the board
+-}
 printBlackBoard' :: Int -> Int -> Board -> String 
 --VARIANT: 
 printBlackBoard' 1 8 ((a:xs):xss) = printBlackBoard' 2 8 (xs:xss) ++ ("║" ++ show a++" ║" ++  "\n  ╚══╩══╩══╩══╩══╩══╩══╩══╝\n    h  g  f  e  d  c  b  a\n") 
