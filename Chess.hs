@@ -9,7 +9,7 @@ import Debug.Trace
 main :: IO () 
 main = play initBoard White 
 {-strToCoord str
-   PRE: the char must from a to h and the inte muste be from 1 to 8 
+   PRE: the char must from a to h and the int must be from 1 to 8 
 a function that converts a char and a int into a tuple of ints in form of coordinates where the char is the first int in the tuple
 and the int is the second int in the tuple
   RETURNS: a tuple of ints 
@@ -96,7 +96,7 @@ printBoard clr brd = putStrLn (case clr of
 {-printWhiteBoard'
 a function that makes a list of squares to a playable board-}
 printWhiteBoard' :: Int -> Int -> Board -> String 
---VARIANT:
+--VARIANT: 
 printWhiteBoard' 1 8 ((a:xs):xss) = "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" "   ++ printWhiteBoard' 2 8 (xs:xss)
 printWhiteBoard' 1 y ((a:xs):xss) = show y++" ║"++show a++" "                         ++ printWhiteBoard' 2 y (xs:xss)
 printWhiteBoard' x y ((a:xs):xss) =  "║" ++ show a ++" "                              ++ printWhiteBoard' (x+1) y (xs:xss)
