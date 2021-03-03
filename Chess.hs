@@ -8,6 +8,7 @@ import Debug.Trace
 
 main :: IO () 
 main = play initBoard White 
+
 {-strToCoord str
    PRE: the char must from a to h and the int must be from 1 to 8 
 a function that converts a char and a int into a tuple of ints in form of coordinates where the char is the first int in the tuple
@@ -16,7 +17,6 @@ and the int is the second int in the tuple
   EXAMPLES: strToCoord "a4" = (0,4)
             strToCoord "a1" = (0,7)
             strToCoord "h1" = (7,7)
-
 -}
 strToCoord :: String ->  Coordinate
 strToCoord "" = undefined
@@ -142,14 +142,14 @@ A function that checks if the enPassant move is available
     EXAMPLES:  enPassant White testBoard (6,3) (7,2) = True
                enPassant Black testBoard (6,3) (7,2) = False-}
 enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
-enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) && isNotSelfDoubleMove
+enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) && isPawn
     where front = case snd crd2 of
               0 -> False
               _ -> getSquare (fst crd2,snd crd2 - 1) brd == Piece (other clr) (Pawn DoubleMove)
           back = case snd crd2 of
               7 -> False
               _ -> getSquare (fst crd2,snd crd2 + 1) brd == Piece (other clr) (Pawn DoubleMove)
-          isNotSelfDoubleMove = getSquare crd1 brd /= Piece clr (Pawn DoubleMove) && abs (snd crd1 - snd crd2) < 2 
+          isPawn = getSquare crd1 brd == Piece clr (Pawn SingleMove) && abs (snd crd1 - snd crd2) < 2 
           
 
 

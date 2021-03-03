@@ -30,8 +30,8 @@ main = do
 
 {-renderGame game
     a function to render the Board
-    RETURNS: an IO Picture action containing the picture with all the
-
+    RETURNS: an IO Picture containing the picture of the board if the game is running
+             an IO Picture containing the losing screen if the game is over
 -}
 renderGame :: Game -> IO Picture 
 renderGame game = case gameState game of
@@ -68,7 +68,11 @@ renderGame game = case gameState game of
                   whitepawn',whitebishop',whiterook',whiteknight',whiteking',whitequeen',blackpawn',blackbishop',blackrook',blackknight',blackking',blackqueen',empty']
     return $ renderBoard pieces (gameBoard game)
        
-
+{-renderBoard images board
+    a function to create a picture of the board from the correct list of images
+    PRE: images has to be a list of all bitmap pictures in the right order
+    RETURNS: a picture of the board built with the list of images
+-}
 renderBoard :: [Picture] -> Board -> Picture
 renderBoard imgs brd =
  pictures $ [translate (fromIntegral $ -210+60*x) (fromIntegral $ 210-60*y) $
@@ -104,6 +108,10 @@ renderBoard imgs brd =
         | x <- [0..7], y <- [0..7], sqr <- [(brd !! y) !! x]]
 
 
+{-getClicks event game
+    a function to handle the mouseclicks in the window and make moves on the board
+    RETURNS: an IO Game action
+-}
 getClicks :: Event -> Game -> IO Game
 getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
     mated <- isMated (gamePlayer game) (gameBoard game)
@@ -133,9 +141,23 @@ getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
             validMoveGame crd1 crd2 game
 getClicks _ game = return game
 
+
+{-parseCoord windowcoordinate
+    a function to translate the coordinates on the window to a coordinate on the chessboard
+    PRE: -240 < x < 240
+         -240 < y < 240
+    RETURNS: a coordinate from the coordinates on the window
+    EXAMPLES: parseCoord (239.3,145.6)  == (7,1)
+              parseCoord (-239.3,145.6) == (0,1)
+-}
 parseCoord :: (Float,Float) -> Coordinate
 parseCoord (x,y) = (floor ((x + 240)/60),floor ((240 - y)/60))
 
+{-validMoveGame firstcoordinate secondcoordinate game
+    a function to update the gameboard with a new move if the move from the first to the second coordinate is valid
+    RETURNS: an IO Game action where the gameBoard is updated, gamePlayer is switched and gameState is Crd1 if a move is made
+             an IO Game action where the gameBoard is updated, gamePlayer is the same and gameState is Crd1 if no move is made
+-}
 validMoveGame :: Coordinate -> Coordinate -> Game -> IO Game 
 validMoveGame crd1 crd2 game = do
         let brd = gameBoard game
@@ -161,6 +183,11 @@ validMoveGame crd1 crd2 game = do
                 putStrLn "Invalid move!"
                 return $ game {gameState = Crd1, fstCrd = (9,9)}
 
+{-autopromote clr brd
+    a function to promote a pawn to a queen if there is a pawn that has reached the other side
+    RETURNS: an IO Board action where the pawn has been promoted to a queen if there was a pawn that could be promote
+             an IO Board action with the same board if no pawn has been promoted
+-}
 autopromote :: PColor -> Board -> IO Board 
 autopromote clr brd = do
             if null (getPromotedPawn clr brd)
