@@ -113,6 +113,10 @@ changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
  a function that replaces index x on row to square
  PRE: must be a valid int, from 0 to 7.
  RETURNS: A list of squares
+ EXAMPLES: changeSquare' 3 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty] (Piece White Queen)
+          = [ , , ,♕, , , , ]
+           changeSquare' 0 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty] (Piece White Knight)
+           = [♘, , , , , , , ]
 -}
 changeSquare' :: Int -> [Square] -> Square -> [Square]
 --VARIANT: x
