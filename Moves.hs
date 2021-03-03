@@ -235,7 +235,6 @@ a function that checks all possible moves for the rook and puts them in a list o
 rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
 
-
 {-
 bishopmoves (x,y) clr brd
 a function that checks all possible moves for the bishop and puts them in a list of coordinates
