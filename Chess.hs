@@ -31,14 +31,6 @@ strToCoord ('g':xs) =  (6,8 - read xs)
 strToCoord ('h':xs) =  (7,8 - read xs)
 strToCoord (_:xs) = undefined
 
-
-
-
-
-
-
-
-
 {-strToPiece string
   makes a PType from a string 
   PRE: the string must be "q", "b", "k" or "r"
@@ -83,7 +75,7 @@ printBoard clr brd = putStrLn (case clr of
     RETURNS: a string of the board
 -}
 printWhiteBoard' :: Int -> Int -> Board -> String 
---VARIANT: Lenght of Board
+--VARIANT: Length of Board
 printWhiteBoard' 1 8 ((a:xs):xss) = "  ╔══╦══╦══╦══╦══╦══╦══╦══╗\n8 ║"++show a++" "   ++ printWhiteBoard' 2 8 (xs:xss)
 printWhiteBoard' 1 y ((a:xs):xss) = show y++" ║"++show a++" "                         ++ printWhiteBoard' 2 y (xs:xss)
 printWhiteBoard' x y ((a:xs):xss) =  "║" ++ show a ++" "                              ++ printWhiteBoard' (x+1) y (xs:xss)
@@ -108,30 +100,29 @@ printBlackBoard' x y []           =  ""
 
 {-changeSquare coordinate board square
  a function that takes a coordinate from a board and changes whats on that coordinate to square
- RETURNS: A new board where square is at coordinate.
+ RETURNS: A new board with the differnece being the square that is changed within the argument board
  EXAMPLES: head $ changeSquare (0,0) initBoard (Piece Black Knight) = [♞,♞,♝,♛,♚,♝,♞,♜]
            head $ changeSquare (0,0) initBoard (Piece Black Queen) = [♛,♞,♝,♛,♚,♝,♞,♜]
- 
  -}
-
 changeSquare :: Coordinate -> Board -> Square -> Board
 --VARIANT: y
 changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
 
 {-changeSquare' x row square 
- a function that takes the first int in our coordinate and calls recursevly until it is 0
- PRE: must be a valid x, from 0 to 7.
- RETURNS: A list of squares -}
-
+ a function that replaces index x on row to square
+ PRE: must be a valid int, from 0 to 7.
+ RETURNS: A list of squares
+-}
 changeSquare' :: Int -> [Square] -> Square -> [Square]
 --VARIANT: x
 changeSquare' 0 (a:xs) square = square:xs 
 changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 
 {-enPassant clr brd crd1 crd2 
-A function that checks if the enPassant move is available
-    RETURNS: True or False
+    a function that checks if the enPassant move is available
+    RETURNS: True if en passant is availibe
+             False if it is not availible
     EXAMPLES:  enPassant White testBoard (6,3) (7,2) = True
                enPassant Black testBoard (6,3) (7,2) = False-}
 enPassant :: PColor -> Board -> Coordinate -> Coordinate -> Bool
@@ -146,7 +137,10 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
           
 
 
-
+{-movePiece board crd1 crd2
+    a function to move a piece from crd1 to crd2 on board
+    RETURNS: a new IO Board from board
+-}
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
     let piece = getSquare crd1 board
@@ -197,7 +191,7 @@ resetDoubleMove clr brd = if null doublepawn then brd else changeSquare (head do
     where doublepawn = filter (\x -> getSquare x brd == Piece clr (Pawn DoubleMove)) [(x,y) | x <- [0..7], y <- [0..7]] 
 
 {-play brd clr
-play function allows a clr to start the game and make the first move on a specific brd
+    play function allows a clr to start the game and make the first move on a specific brd
    EXAMPLES: play initBoard White :  Starts a standard chess game -}
 play :: Board -> PColor -> IO ()
 play brd clr = do
@@ -232,7 +226,7 @@ playerTurn crd1 crd2 clr brd = do
         where sqrcord1 = getSquare crd1 brd
 
 {-askMove
-    a function that ask a player to make a specific move and checks if both inputs are a valid coordiante on the board.
+    a function that ask a player to make a specific move and returns a coordinate if both inputs are a valid coordinate on the board. 
 -}
 askMove :: IO (Coordinate, Coordinate)
 askMove = do
@@ -240,7 +234,7 @@ askMove = do
     crd1 <- getLine
     crd2 <- getLine 
     if crd1 `elem` validInputs && crd2 `elem` validInputs
-        then  return (strToCoord crd1,strToCoord crd2)
+        then return (strToCoord crd1,strToCoord crd2)
         else do
             putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
@@ -265,7 +259,7 @@ validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2
         let pieceMoves = case piece of
                 (Pawn _) -> pawnMoves crd1 clr brd
-                Knight -> knightMoves crd1 clr brd
+                Knight -> knightmoves crd1 clr brd
                 Bishop -> bishopmoves crd1 clr brd
                 Queen -> queenmoves crd1 clr brd
                 (Rook _) -> rookmoves crd1 clr brd
@@ -279,13 +273,15 @@ validMove clr piece crd1 crd2 brd = do
             else do 
                 putStrLn "Invalid Move"
                 makeMove clr brd
+
 {-isMated clr brd
-A function that checks if clr is mated on the board -}
+    a function to check if clr is mated on brd
+-}
 isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
                         (Pawn _) -> mapM (movePiece brd x) (pawnMoves x clr brd)
-                        Knight -> mapM (movePiece brd x) (knightMoves x clr brd)
+                        Knight -> mapM (movePiece brd x) (knightmoves x clr brd)
                         Bishop -> mapM (movePiece brd x) (bishopmoves x clr brd)
                         Queen -> mapM (movePiece brd x) (queenmoves x clr brd)
                         (Rook _) -> mapM (movePiece brd x) (rookmoves x clr brd)
@@ -294,7 +290,8 @@ isMated clr brd = do
             let allbrds = concat brds
             return $ notElem False (map (isChecked clr) allbrds)
 {-promote clr brd
-a function that promotes a piece for the input clr to a specific piece if the pawn is on the right rank.-}
+    a function that changes a pawn to another piece if it has reached the opposite back rank
+-}
 promote :: PColor -> Board -> IO Board 
 promote clr brd = do
             if null (getPromotedPawn clr brd)
@@ -304,7 +301,7 @@ promote clr brd = do
                     return $ changeSquare (head (getPromotedPawn clr brd)) brd (Piece clr piece)
                                                         
 {-askPromote
-    a function to prompt the player for a piece and then returns players choice
+    a function to prompt the player for a piece and then returns the players choice
 -}
 askPromote :: IO PType
 askPromote = do

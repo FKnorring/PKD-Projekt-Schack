@@ -1,7 +1,6 @@
 import Board
 import Moves
 import Chess hiding (main, play)
-import Debug.Trace
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
@@ -165,7 +164,7 @@ validMoveGame crd1 crd2 game = do
             piece = getType $ getSquare crd1 brd
             pieceMoves = case piece of
                     (Pawn _) -> pawnMoves crd1 clr brd
-                    Knight -> horseMoves crd1 clr brd
+                    Knight -> knightmoves crd1 clr brd
                     Bishop -> bishopmoves crd1 clr brd
                     Queen -> queenmoves crd1 clr brd
                     (Rook _) -> rookmoves crd1 clr brd
