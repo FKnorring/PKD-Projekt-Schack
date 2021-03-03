@@ -21,16 +21,16 @@ validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
 pawnMoves :: Coordinate -> PColor -> Board -> [Coordinate]
 pawnMoves (x,6) White brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
-    (pawnMoves' (x,6) White) ++ if isEmpty (getSquare (x, 5) brd) then (x,5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)]) else []
+    (pawnCaptures (x,6) White) ++ if isEmpty (getSquare (x, 5) brd) then (x,5) : ([(x, 4) | isEmpty (getSquare (x, 4) brd)]) else []
 pawnMoves (x,y) White brd = enPassantSquare (x,y) White brd ++ filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= White) 
-    (pawnMoves' (x,y) White)  ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
+    (pawnCaptures (x,y) White)  ++ [(x, y - 1) | isEmpty (getSquare (x, y - 1) brd)]
 pawnMoves (x,1) Black brd = filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
-    (pawnMoves' (x,1) Black) ++ if isEmpty (getSquare (x, 2) brd) then (x,2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)]) else []
+    (pawnCaptures (x,1) Black) ++ if isEmpty (getSquare (x, 2) brd) then (x,2) : ([(x, 3) | isEmpty (getSquare (x, 3) brd)]) else []
 pawnMoves (x,y) Black brd = enPassantSquare (x,y) Black brd ++ filter 
     (\x -> not (isEmpty (getSquare x brd)) && getColor (getSquare x brd) /= Black) 
-    (pawnMoves' (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)] ++ enPassantSquare (x,y) Black brd
+    (pawnCaptures (x,y) Black) ++ [(x, y + 1) | isEmpty (getSquare (x, y + 1) brd)] ++ enPassantSquare (x,y) Black brd
 
 
 {-enPassantSquare coordinate color board
@@ -61,18 +61,18 @@ enPassantSquare (x,y) Black brd
     | getSquare (x-1,y) brd == Piece White (Pawn DoubleMove) = [(x-1,y+1)]
     | otherwise = []
 
-{-pawnMoves' crd clr 
+{-pawnCaptures crd clr 
 a helper function that checks one square diagonally infront to the left and right of a pawn and if that coordiante is a element of validSquares.
     PRE: the coordinate must be between (0,0) and (7,7)
     RETURNS: a list containg tuples of two ints.
-    EXAMPLES: pawnMoves' (7,6) White = [(6,5)]
-              pawnMoves' (6,6) White = [(7,5),(5,5)]
-              pawnMoves' (0,1) Black = [(1,2)]
-              pawnMoves' (1,1) Black = [(2,2),(0,2)]
+    EXAMPLES: pawnCaptures (7,6) White = [(6,5)]
+              pawnCaptures (6,6) White = [(7,5),(5,5)]
+              pawnCaptures (0,1) Black = [(1,2)]
+              pawnCaptures (1,1) Black = [(2,2),(0,2)]
                -}
-pawnMoves' :: Coordinate -> PColor -> [Coordinate]
-pawnMoves' (x,y) White = validSquares [(x+1,y-1),(x-1,y-1)]
-pawnMoves' (x,y) Black = validSquares [(x+1,y+1),(x-1,y+1)]
+pawnCaptures :: Coordinate -> PColor -> [Coordinate]
+pawnCaptures (x,y) White = validSquares [(x+1,y-1),(x-1,y-1)]
+pawnCaptures (x,y) Black = validSquares [(x+1,y+1),(x-1,y+1)]
 
 
 
