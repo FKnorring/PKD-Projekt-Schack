@@ -260,17 +260,6 @@ kingmoves (x,y) clr brd = filter
 
 {-kingmoves' (x,y)
   Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
-  RETURNS : A list of coordinates
-  EXAMPLES: kingmoves' (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
-            kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
-            kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
--}
-
-kingmoves' :: Coordinate -> [Coordinate]
-kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
-
-{-kingmoves' (x,y)
-  Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates
   EXAMPLES: kingmoves' (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
