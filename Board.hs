@@ -1,13 +1,12 @@
 module Board where
-import Debug.Trace
 
 
-{-data Square represents if a certain square is empty or contains a piece-}
+{-data Square represents a square that is either empty or contains a piece-}
 data Square = Empty | Piece PColor PType deriving (Eq)
 
 {-type Board represents a chessboard containing squares
-    INVARIANT: the board has to be a list containing 8 lists each conatining
-    8 Square elements since the chess board is an 8x8 grid
+    INVARIANT: the board has to be a list containing 8 lists each containing
+    8 Square elements, since the chess board is an 8x8 grid
 -}
 type Board = [[Square]]
 
@@ -55,7 +54,7 @@ instance Show Square where
     
 {-isEmpty square
     a function to check if a square is empty
-    RETURNS: True if the square is empty, otherwise FALSE
+    RETURNS: True if the square is empty, otherwise False
     EXAMPLES: isEmpty Empty == True
               isEmpty (Piece White Bishop) == False
 -}
@@ -77,7 +76,7 @@ getColor (Piece Black _) = Black
 getColor Empty = Null
 
 {-getType square
-    a function to retrive the color of a piece on a square
+    a function to retrive the type of a piece on a square
     PRE: the square has to contain a piece
     RETURNS: the piece type on the given square
     EXAMPLES: getType (Piece White Pawn DoubleMove) == Pawn DoubleMove
