@@ -1,5 +1,5 @@
 module Board where
-import Debug.Trace
+
 
 
 {-data Square represents if a certain square is empty or contains a piece-}
@@ -55,7 +55,7 @@ instance Show Square where
     
 {-isEmpty square
     a function to check if a square is empty
-    RETURNS: True if the square is empty, otherwise FALSE
+    RETURNS: True if the square is empty, otherwise False
     EXAMPLES: isEmpty Empty == True
               isEmpty (Piece White Bishop) == False
 -}

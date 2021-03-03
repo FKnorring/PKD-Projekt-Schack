@@ -1,11 +1,12 @@
 module Chess where
 import Board
 import Moves
-import Debug.Trace
+
 
 
 --import Test.HUnit
-
+{-main
+A function to start the game-}
 main :: IO () 
 main = play initBoard White 
 
@@ -32,26 +33,11 @@ strToCoord (_:xs) = undefined
 
 
 
-{-coordToStr coordinate
-A function that converts a Coordinate into a string of a char and a int
-  PRE: the ints must be from 0 to 7 
-  RETURNS: a string containing a char and a int
-  EXAMPLES: coordToStr (0,0) = "a8"
-            coordToStr (7,7) = "h1"
-            coordToStr (5,5) = "f3"
-
--}
 
 
-coordToStr :: Coordinate -> String 
-coordToStr (0,z) = 'a' : show (8 - z)
-coordToStr (1,z) = 'b' : show (8 - z)
-coordToStr (2,z) = 'c' : show (8 - z)
-coordToStr (3,z) = 'd' : show (8 - z)
-coordToStr (4,z) = 'e' : show (8 - z)
-coordToStr (5,z) = 'f' : show (8 - z)
-coordToStr (6,z) = 'g' : show (8 - z)
-coordToStr (7,z) = 'h' : show (8 - z)
+
+
+
 
 {-strToPiece string
   makes a PType from a string 
@@ -83,7 +69,7 @@ initBoard = [[Piece Black (Rook Unmoved ),Piece Black Knight,Piece Black Bishop,
 
 {-printBoard color board
     a function that prints a board to the terminal for colors perspective
-    PRE: type in "chcp.com 65001" in terminal before ghci so u it can print the pieces. 
+    PRE: type in "chcp.com 65001" in terminal before ghci so u it can print the pieces. If you are on Windows
     RETURNS: an IO action that prints multiple lines of strings 
 -}
 printBoard :: PColor -> Board -> IO ()
@@ -122,20 +108,18 @@ printBlackBoard' x y []           =  ""
 
 {-changeSquare coordinate board square
  a function that takes a coordinate from a board and changes whats on that coordinate to square
- PRE: must be a valid coordinate, meaning from (0,0) to (7,7).
- RETURNS: A new board with the differnece being the square that is changed within the argument board-}
- --VARIANT: Length of board ?
+ RETURNS: A new board where square is at coordinate.-}
 
 changeSquare :: Coordinate -> Board -> Square -> Board
 --VARIANT: y
 changeSquare (x,0) (a:xs) square = changeSquare' x a square:xs
 changeSquare (x,y) (a:xs) square = a : changeSquare (x,y-1) xs square
 
-{-changeSquare' Int [square] square 
- an aux function that takes the first int in our coordinate and calls recursevly until it is 0
- PRE: must be a valid int, from 0 to 7.
+{-changeSquare' x row square 
+ a function that takes the first int in our coordinate and calls recursevly until it is 0
+ PRE: must be a valid x, from 0 to 7.
  RETURNS: A list of squares -}
---VARIANT: The first int in coordinate.
+
 changeSquare' :: Int -> [Square] -> Square -> [Square]
 --VARIANT: x
 changeSquare' 0 (a:xs) square = square:xs 
@@ -143,7 +127,6 @@ changeSquare' x (a:xs) square = a:changeSquare' (x-1) xs square
 
 {-enPassant clr brd crd1 crd2 
 A function that checks if the enPassant move is available
-    PRE: crd1 amd crd2 must be between (0,0) and (7,7)
     RETURNS: True or False
     EXAMPLES:  enPassant White testBoard (6,3) (7,2) = True
                enPassant Black testBoard (6,3) (7,2) = False-}
@@ -192,7 +175,7 @@ movePiece board crd1 crd2 = do
                 changeSquare crd1 (changeSquare (3,0) (changeSquare (0,0) (changeSquare crd2 brd (Piece Black (King Moved))) Empty) (Piece Black (Rook Moved))) Empty
     
 {-removeDoublePawn clr brd
-a function that changes all squares containing a doublePawn of the opposite color to a empty square
+a function that changes the square containing a doublePawn of the opposite color to a empty square
    RETURNS: updated board
    EXAMPLES:  removeDoublePawn White testBoard = [ , , , , , ,♙, ] Note: only list with changes
               removeDoublePawn Black testBoard = [ , , , , , ,♙,♟] Note: only list with changes
@@ -233,7 +216,7 @@ play brd clr = do
             play newbrd' $ other clr
 
 {-playerTurn crd1 crd2 clr brd
-    a function that performs one turn for a clr by calling on multiple functions that checks if its a legal move
+    a function that performs one turn for a color on board by checking if a move from crd1 to crd2 is legal.
 -}       
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
@@ -245,7 +228,7 @@ playerTurn crd1 crd2 clr brd = do
         where sqrcord1 = getSquare crd1 brd
 
 {-askMove
-    a function that ask a player to make a specific move and checks if both inputs are in validmove. 
+    a function that ask a player to make a specific move and checks if both inputs are a valid coordiante on the board.
 -}
 askMove :: IO (Coordinate, Coordinate)
 askMove = do
@@ -253,15 +236,13 @@ askMove = do
     crd1 <- getLine
     crd2 <- getLine 
     if crd1 `elem` validInputs && crd2 `elem` validInputs
-        then case crd1 of
-            "O-O"   -> return ((99,99),(99,99))
-            "O-O-O" -> return ((-99,-99),(-99,-99))
-            _       -> return (strToCoord crd1,strToCoord crd2)
+        then  return (strToCoord crd1,strToCoord crd2)
         else do
             putStrLn "Either one or both inputs are not a valid coordinate"
             askMove
+
 {-makeMove clr brd
-    a function that asks the clr for two coordinates then tries to make said move-}
+    a function that a promts clr for two coordinates and then sends it to playerTurn-}
 makeMove :: PColor -> Board -> IO Board
 makeMove clr brd = do
         (crd1,crd2) <- askMove
@@ -269,8 +250,9 @@ makeMove clr brd = do
     
 
 validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
+
 {-validMove color piece firstcoordinate secondcoordinate board
-    a function to make a move for color with piece from firstcoordinate to second coordinate on board if it is valid
+    a function to make a move for color with piece from first coordinate to second coordinate on board if it is valid
     RETURNS: a new board if a valid move is made
              outputs "Invalid Move" if the move is invalid and then asks for new coordinates
 -}
@@ -279,7 +261,7 @@ validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2
         let pieceMoves = case piece of
                 (Pawn _) -> pawnMoves crd1 clr brd
-                Knight -> horseMoves crd1 clr brd
+                Knight -> knightMoves crd1 clr brd
                 Bishop -> bishopmoves crd1 clr brd
                 Queen -> queenmoves crd1 clr brd
                 (Rook _) -> rookmoves crd1 clr brd
@@ -294,12 +276,12 @@ validMove clr piece crd1 crd2 brd = do
                 putStrLn "Invalid Move"
                 makeMove clr brd
 {-isMated clr brd
-A function that checks if any possible move by a color changes isChecked to false. -}
+A function that checks if clr is mated on the board -}
 isMated :: PColor -> Board -> IO Bool
 isMated clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
                         (Pawn _) -> mapM (movePiece brd x) (pawnMoves x clr brd)
-                        Knight -> mapM (movePiece brd x) (horseMoves x clr brd)
+                        Knight -> mapM (movePiece brd x) (knightMoves x clr brd)
                         Bishop -> mapM (movePiece brd x) (bishopmoves x clr brd)
                         Queen -> mapM (movePiece brd x) (queenmoves x clr brd)
                         (Rook _) -> mapM (movePiece brd x) (rookmoves x clr brd)
@@ -374,7 +356,7 @@ test9 = TestCase $ assertEqual "checks if promotedPawn function finds the correc
 
 test10 = TestCase $ assertEqual "checks if promotedPawn function finds the correct promotedPawn on the testBoard" [] (getPromotedPawn Black testBoard)
 
-test11 = TestCase $ assertEqual "Checks the White horse all possible moves on the startboard" [(2,5),(0,5)] (horseMoves (1,7) White initBoard)
+test11 = TestCase $ assertEqual "Checks the White horse all possible moves on the startboard" [(2,5),(0,5)] (knightMoves (1,7) White initBoard)
 
 test12 = TestCase $ assertEqual "finds the square the pawn can move to make the move enPassant" [(7,2)] (enPassantSquare (6,3) White testBoard)
 

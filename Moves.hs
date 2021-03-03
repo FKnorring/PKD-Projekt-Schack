@@ -1,6 +1,6 @@
 module Moves where
 import Board
-import Debug.Trace
+
 
 {-validSquares
     a function that filters a list of coordinates with all the possible coordiantes on the board
@@ -11,7 +11,6 @@ validSquares = filter (`elem` ([(x,y) | x <- [0..7], y <- [0..7]]))
 
 {-pawnMoves coordinate color board
   a function that checks all possible moves for a white or black pawn and puts them in a list of coordinates
-  PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS: a list of coordinates, the possible moves for a pawn in coordinate of PColor color
   EXAMPLES: pawnMoves (2,2) White initBoard = [(3,1),(1,1)]
             pawnMoves (2,1) Black initBoard = [(2,2),(2,3)]
@@ -35,8 +34,7 @@ pawnMoves (x,y) Black brd = enPassantSquare (x,y) Black brd ++ filter
 
 {-enPassantSquare coordinate color board
   a function that gives the coordinate of the square for an en passant move if such is availible
-  PRE: the coordinate must be between (0,0) and (7,7)
-  RETURNS: a list containing either nothing or the coordinate where containing the en passant move
+  RETURNS: a list containing either nothing or the coordinate containing the en passant move
   EXAMPLES: enPassantSquare (6,4) White initBoard == []
  -}
 enPassantSquare :: Coordinate -> PColor -> Board -> [Coordinate]
@@ -62,8 +60,7 @@ enPassantSquare (x,y) Black brd
     | otherwise = []
 
 {-pawnCaptures crd clr 
-a helper function that checks one square diagonally infront to the left and right of a pawn and if that coordiante is a element of validSquares.
-    PRE: the coordinate must be between (0,0) and (7,7)
+a function that checks one square diagonally infront to the left and right of a pawn and if that coordiante is a element of validSquares.
     RETURNS: a list containg tuples of two ints.
     EXAMPLES: pawnCaptures (7,6) White = [(6,5)]
               pawnCaptures (6,6) White = [(7,5),(5,5)]
@@ -77,8 +74,7 @@ pawnCaptures (x,y) Black = validSquares [(x+1,y+1),(x-1,y+1)]
 
 
 {-toFront (x,y) clr brd
-a function that takes the coordiantes, color of the piece and a board and returns a list of all possible coordinates the piece can move to infront of it including one square occupied by a diiferent color piece
-  PRE: the coordinate must be between (0,0) and (7,7)
+a function that takes the coordinates, color of the piece and a board and returns a list of all possible coordinates the piece can move to infront of it including one square occupied by a diiferent color piece
   RETURNS: a list of tuples containing two ints
   EXAMPLES: toFront (5,5) White initBoard = [(5,4),(5,3),(5,2),(5,1)]
             toFront (5,5) Black initBoard = [(5,4),(5,3),(5,2)]
@@ -96,7 +92,7 @@ toFront (x,y) clr brd
 
 
 {-toBack (x,y) clr brd
-a function that takes the coordiantes, color of the piece and a board and returns a list of all possible coordinates the piece can move to back from it including one square occupied by a diiferent color piece
+a function that finds all legal coordiantes behind (x,y)
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS: a list of tuples containing two ints
   EXAMPLES: toBack (5,5) White initBoard = []
@@ -131,8 +127,7 @@ toLeft (x,y) clr brd
     | otherwise = [(x-1,y)]
 
 {-toRight (x,y) clr brd
-a function that takes the coordiantes, color of the piece and a board and returns a list of all possible coordinates the piece can move right on the board including one square occupied by a diiferent color piece
-  PRE: the coordinate must be between (0,0) and (7,7)
+a function that finds all legal coordiantes to the right of (x,y)
   RETURNS: a list of tuples containing two ints
   EXAMPLES: toRight (5,4) White initBoard = [(6,4),(7,4)]
             toRight (5,4) Black initBoard = [(6,4),(7,4)]
@@ -148,7 +143,7 @@ toRight (x,y) clr brd
     | otherwise = [(x+1,y)]
 
 {-diaBR(x,y) clr brd
-a function that takes the coordiantes, color of the piece and a board and returns a list of all possible coordinates the piece can move diagonally back right on the board including one square occupied by a diiferent color piece
+a function that finds all legal coordinates diagonally back right of a (x,y) for clr on board
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS: a list of tuples containing two ints
   EXAMPLES: diarBR (5,4) White initBoard = [(6,5)]
@@ -167,7 +162,7 @@ diagBR (x,y) clr brd
 
 
 {-diaFR(x,y) clr brd
-a function that takes the coordiantes, color of the piece and a board and returns a list of all possible coordinates the piece can move diagonally front left on the board including one square occupied by a diiferent color piece
+a function that finds all legal coordinates diagonally front right of (x,y) for clr on brd
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS: a list of tuples containing two ints
   EXAMPLES: diarFR (5,4) White initBoard = [(6,3),(7,2)]
@@ -206,7 +201,7 @@ diagBL (x,y) clr brd
 
 {-diaFL(x,y) clr brd
 a function that takes the coordiantes, color of the piece and a board and returns a list of all possible coordinates the piece can move diagonally front left on the board including one square occupied by a diiferent color piece
-  PRE: the coordinate must be between (0,0) and (7,7)
+
   RETURNS: a list of tuples containing two ints
   EXAMPLES: diaFL (5,4) White initBoard = [(4,3),(3,2),(2,1)]
             diarFL (5,4) Black initBoard = [(4,3),(3,2)]
@@ -224,7 +219,7 @@ diagFL (x,y) clr brd
 
 
 {- rookmoves (x,y) clr brd
-a function that checks all possible moves for the rook and puts them in a list of coordinates
+a function that checks all possible moves for a clr rook on (x,y) and puts them in a list of coordinates
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS: A list of tuples containg two ints
   EXAMPLES: rookmoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4)]
@@ -237,8 +232,7 @@ rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLef
 
 {-
 bishopmoves (x,y) clr brd
-a function that checks all possible moves for the bishop and puts them in a list of coordinates
-  PRE: the coordinate must be between (0,0) and (7,7)
+a function that checks all possible moves for a clr bishop  on (x,y) on brd and puts them into a list of coordinates
   RETURNS : A list of tuples containing two ints
   EXAMPLES: bishopmoves (4,4) White initBoard = [(5,3),(6,2),(7,1),(3,3),(2,2),(1,1),(5,5),(3,5)]
             bishopmoves (4,4) Black initBoard = [(5,3),(6,2),(3,3),(2,2),(5,5),(6,6),(3,5),(2,6)]
@@ -249,7 +243,7 @@ bishopmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 bishopmoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
 
 {-queenmoves (x,y) clr brd 
-    Checks all possible moves for the queen depending on the color of it, returns a list of coordinates thats possible for a queen to move to
+a function that checks all possible moves for a clr queen on (x,y) on brd and puts them into a list of coordinates
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates
   EXAMPLES: queenmoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4),(5,3),(6,2),(7,1),(3,3),(2,2),(1,1),(5,5),(3,5)]
@@ -263,7 +257,7 @@ queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
 
 
 {-kingmoves (x,y) clr brd
-    Checks all possible moves for the king depending on the color of it, returns a list of coordinates thats possible for a king to move to
+a function that checks all possible moves for a clr king on (x,y) on brd and puts them into a list of coordinates
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates
   EXAMPLES: kingmoves (2,5) White initBoard = [(1,4),(3,4),(2,4),(3,5),(1,5)]
@@ -273,6 +267,17 @@ queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
 kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
 kingmoves (x,y) clr brd = filter 
    (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y)) 
+
+{-kingmoves' (x,y)
+  Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
+  PRE: the coordinate must be between (0,0) and (7,7)
+  RETURNS : A list of coordinates
+  EXAMPLES: kingmoves' (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
+            kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
+            kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
+-}
+kingmoves' :: Coordinate -> [Coordinate]
+kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
 {-castlemoves color board
     a function to get the coordinate for castling if is is availible
@@ -310,50 +315,33 @@ canCastleQ :: PColor -> Board -> Bool
 canCastleQ White brd = not ((3,7) `elem` possibleMoves Black brd) && clearQSide White brd
 canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide Black brd
 
-{-kingmoves' (x,y)
-  Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
+
+
+
+
+{-knightMoves (x,y) clr brd
+a function that checks all possible moves for a clr knight on (x,y) on brd and puts them into a list of coordinates
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates
-  EXAMPLES: kingmoves' (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
-            kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
-            kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
+  EXAMPLES: knightMoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
+            knightMoves (2,5) Black initBoard = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
+            knightMoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
+            knightMoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
 -}
-kingmoves' :: Coordinate -> [Coordinate]
-kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+knightMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+knightMoves (x,y) clr brd = filter 
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (knightMoves' (x,y))
 
-{-kingmoves (x,y) clr brd
-    Checks all possible moves for the horse depending on the color of it, returns a list of coordinates thats possible for a horse to move to
-  PRE: the coordinate must be between (0,0) and (7,7)
-  RETURNS : A list of coordinates
-  EXAMPLES: horseMoves (2,5) White initBoard = [(1,4),(3,4),(2,4),(3,5),(1,5)]
-            horseMoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
-            horseMoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
-            horseMoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
--}
-
-{-horseMoves (x,y) clr brd
-  Checks all possible moves for the horse depending on the color of it, returns a list of coordinates thats possible for a horse to move to
-  PRE: the coordinate must be between (0,0) and (7,7)
-  RETURNS : A list of coordinates
-  EXAMPLES: horseMoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
-            horseMoves (2,5) Black initBoard = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
-            horseMoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
-            horseMoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
--}
-horseMoves :: Coordinate -> PColor -> Board -> [Coordinate]
-horseMoves (x,y) clr brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (horseMoves' (x,y))
-
-{-horseMoves' (x,y)
-  auxiliary function for horsemoves which makes sure that the coordinates returned in horsemoves are valid, meaning that no int in a coordinte is < 0 or > 8
+{-knightMoves' (x,y)
+  auxiliary function for knightmoves which makes sure that the coordinates returned in horsemoves are valid, meaning that no int in a coordinte is < 0 or > 8
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates 
-  EXAMPLES: horseMoves' (2,5)  = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
-            horseMoves' (0,0)  = [(2,1),(1,2)]
-            horseMoves' (3,3)  = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
+  EXAMPLES: knightMoves' (2,5)  = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
+            knightMoves' (0,0)  = [(2,1),(1,2)]
+            knightMoves' (3,3)  = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
 -}
-horseMoves' :: Coordinate -> [Coordinate]
-horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1),(x-2, y-1),(x+1,y+2),(x+1,y-2),(x-1,y+2),(x-1,y-2)]
+knightMoves' :: Coordinate -> [Coordinate]
+knightMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1),(x-2, y-1),(x+1,y+2),(x+1,y-2),(x-1,y+2),(x-1,y-2)]
 
 {-getKing clr brd
     a function that finds a king Moved or King Unmoved if White or Black on the board and returns its coordinate.
@@ -375,7 +363,7 @@ a function that takes a color and a board and returns a list of all possible coo
 possibleMoves :: PColor -> Board -> [Coordinate]
 possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of 
         (Pawn _) -> pawnMoves x clr brd
-        Knight -> horseMoves x clr brd
+        Knight -> knightMoves x clr brd
         Bishop -> bishopmoves x clr brd
         Queen -> queenmoves x clr brd
         (Rook _) -> rookmoves x clr brd
@@ -383,7 +371,7 @@ possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of
         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
 
 {-isChecked clr brd
-a function that checks if a kings coordinates is in the list of the opponents possible moves and returns a bool
+a function that checks if clr is checked on brd.
     RETURNS: True or False
     EXAMPLES: isChecked White initBoard = False 
               isChecked Black testBoard = False
@@ -393,7 +381,7 @@ isChecked :: PColor -> Board -> Bool
 isChecked clr brd = getKing clr brd `elem` possibleMoves (other clr) brd
 
 {-getPromotedPawn clr brd
-a function that checks if a pawn is on the opponents backrank and returns its specific coordinate.
+a function that checks if clr pawn is on other clr backrank and returns its coordinate.
     RETURNS: a list of coordinates.
     EXAMPLES: getPromotedPawn White initBoard = []
               getPromtedPawn White testBoard2 = [(0,0)]
@@ -418,7 +406,7 @@ clearKSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [
 clearKSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [0]] 
 
 {-clearKSide clr brd
-a function that checks if the list of squares from clearKSide' conatins a King unmoved and a Rook unmoved of the same color on the kingside and they have empty squares between them.
+a function that checks if the list of squares from clearKSide' contains a King unmoved and a Rook unmoved of the same color on the kingside and they have empty squares between them.
     RETURNS: True or False
     Examples: clearKSide White initBoard = False
               clearKSide Black castleBoard = False
