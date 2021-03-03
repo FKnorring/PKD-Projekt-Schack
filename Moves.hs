@@ -355,7 +355,7 @@ horseMoves (x,y) clr brd = filter
             horseMoves' (3,3)  = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
 -}
 horseMoves' :: Coordinate -> [Coordinate]
-horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1), (x-2, y-1), (x+1,y+2) , (x+1,y-2) , (x-1,y+2), (x-1,y-2)]
+horseMoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1),(x-2, y-1),(x+1,y+2),(x+1,y-2),(x-1,y+2),(x-1,y-2)]
 
 {-getKing clr brd
     a function that finds a king Moved or King Unmoved if White or Black on the board and returns its coordinate.
