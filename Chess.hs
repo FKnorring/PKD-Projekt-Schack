@@ -2,9 +2,7 @@ module Chess where
 import Board
 import Moves
 
-
-
---import Test.HUnit
+import Test.HUnit
 {-main
 A function to start the game-}
 main :: IO () 
@@ -273,7 +271,7 @@ validMove clr piece crd1 crd2 brd = do
                 then do
                     putStrLn "Invalid Move"
                     makeMove clr brd
-                else movePiece brd crd1 crd2
+                else return newbrd
             else do 
                 putStrLn "Invalid Move"
                 makeMove clr brd
