@@ -338,18 +338,19 @@ testBoard2 = [[Piece White (Pawn SingleMove),Piece Black Knight,Piece Black Bish
              [Piece White (Rook Unmoved ),Piece White Knight,Piece White Bishop,Piece White Queen,Piece White (King Unmoved),Piece White Bishop,Piece White Knight,Piece White (Rook Unmoved )]]
 
 
-runtests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16,test17]
+runtests = runTestTT $ TestList [test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11,test12,test13,test14,test15,test16,test17,test18]
 
 test1 = TestCase $ assertEqual "Looks if the safe Black king is in check on startboard" False (isChecked White initBoard)
+
 test2 = TestCase $ assertEqual "Looks if the white king is in check on testboard" True (isChecked White testBoard)
 
 test3 = TestCase $ assertEqual "Looks if the safe Black king is safe on testBoard" False (isChecked Black testBoard)
 
 test4 = TestCase $ assertEqual "looks if squares is empty between king and rook, kingside for white  " False (canCastleK White initBoard)
 
-test5 = TestCase $ assertEqual "looks if squares is empty between king and rook, kingside for Black " True (canCastleK Black castleBoard )
+test5 = TestCase $ assertEqual "looks if squares is empty between king and rook, kingside for Black " False (canCastleK Black castleBoard )
 
-test6 = TestCase $ assertEqual "looks if squares is empty between king and rook, queenside for White " True (canCastleQ White castleBoard)
+test6 = TestCase $ assertEqual "looks if squares is empty between king and rook, queenside for White " False (canCastleQ White castleBoard)
 
 test7 = TestCase $ assertEqual "all possible moves for white at the start" [(0,5),(0,4),(1,5),(1,4),(2,5),(0,5),(2,5),(2,4),(3,5),(3,4),(4,5),(4,4),(5,5),(5,4),(6,5),(6,4),(7,5),(5,5),(7,5),(7,4)](possibleMoves White initBoard)
 
@@ -359,7 +360,7 @@ test9 = TestCase $ assertEqual "checks if promotedPawn function finds the correc
 
 test10 = TestCase $ assertEqual "checks if promotedPawn function finds the correct promotedPawn on the testBoard" [] (getPromotedPawn Black testBoard)
 
-test11 = TestCase $ assertEqual "Checks the White horse all possible moves on the startboard" [(2,5),(0,5)] (knightMoves (1,7) White initBoard)
+test11 = TestCase $ assertEqual "Checks the White knights possible moves on the startboard" [(2,5),(0,5)] (knightmoves (1,7) White initBoard)
 
 test12 = TestCase $ assertEqual "finds the square the pawn can move to make the move enPassant" [(7,2)] (enPassantSquare (6,3) White testBoard)
 
@@ -367,9 +368,10 @@ test13 = TestCase $ assertEqual "Checks the White kings possible moves on the te
 
 test14 = TestCase $ assertEqual "test the black kings possible moves on testBoard " [(4,1)] (kingmoves (3,0) Black testBoard)
 
-test15 = TestCase $ assertEqual "test coordstr function for a number of coordinates" ["a8","b8","d5","e3","h1","g3"] (map coordToStr [(0,0),(1,0),(3,3),(4,5),(7,7),(6,5)])
+test15 = TestCase $ assertEqual "test strTocord function for a number of stings" [(0,8),(1,1),(2,3),(1,5)] (map strToCoord ["a0", "b7","c5","b3"])
 
-test16 = TestCase $ assertEqual "test strTocord function for a number of stings" [(0,8),(1,1),(2,3),(1,5)] (map strToCoord ["a0", "b7","c5","b3"])
+test16 = TestCase $ assertEqual "Test if enPassant returns coorect bool for specific coordinate (6,3) (7,2) returns True for testBoard" True (enPassant White testBoard (6,3) (7,2))
 
+test17 =  TestCase $ assertEqual "Test if resetDoubleMove removes all double pawns for a color from a board" [] (concatMap (filter (== (Piece Black (Pawn DoubleMove)))) (resetDoubleMove Black testBoard))
 
-test17 = TestCase $ assertEqual "Test if enPassant returns coorect bool for specif coordiante (6,3) (7,2) returns True for testBoard" True (enPassant White testBoard (6,3) (7,2))
+test18 = TestCase $ assertEqual "Teft if changeSquare works" (Piece White Bishop) (getSquare (0,0) $ changeSquare (0,0) initBoard (Piece White Bishop))
