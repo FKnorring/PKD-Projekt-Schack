@@ -374,4 +374,4 @@ test16 = TestCase $ assertEqual "Test if enPassant returns coorect bool for spec
 
 test17 =  TestCase $ assertEqual "Test if resetDoubleMove removes all double pawns for a color from a board" [] (concatMap (filter (== (Piece Black (Pawn DoubleMove)))) (resetDoubleMove Black testBoard))
 
-test18 = TestCase $ assertEqual "Teft if changeSquare works" (Piece White Bishop) (getSquare (0,0) $ changeSquare (0,0) initBoard (Piece White Bishop))
+test18 = TestCase $ assertEqual "Test if changeSquare works" (Piece White Bishop) (getSquare (0,0) $ changeSquare (0,0) initBoard (Piece White Bishop))
