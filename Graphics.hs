@@ -4,17 +4,17 @@ import Chess hiding (main, play)
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
-{-data State represents the state of the game, 
-    if the state is either Crd1 or Crd2 the game is running
+{-data State represents the state of the game.
+    If the state is either Crd1 or Crd2 the game is running
     and awaiting the first coordinate if state is Crd1,
     the second if the state is Crd2
     Mate and Stalemate is the game over state of the game-}
 data State = Crd1 | Crd2 | Mate | Stalemate deriving (Eq,Show)
 
-{-data Game is a record containing information about the board
-    gameBoard represents the board that is currently being played
-    gamePlayer represents who is Playing
-    gameState represents what state the game is in
+{-data Game is a record containing information about the game.
+    gameBoard represents the board that is currently being played,
+    gamePlayer represents who is playing,
+    gameState represents what state the game is in,
     fstCrd is a global variable to store the first coordinate the player clicked on-}
 data Game = Game { gameBoard :: Board,
                    gamePlayer :: PColor,
