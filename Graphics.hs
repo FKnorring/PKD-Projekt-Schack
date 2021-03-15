@@ -11,26 +11,35 @@ import Graphics.Gloss.Interface.IO.Game
     Mate and Stalemate is the game over state of the game-}
 data State = Crd1 | Crd2 | Mate | Stalemate deriving (Eq,Show)
 
-{-data Game is a record containg information about the board
-    who is playing what state the game is in and what the first coordinate the player specified is-}
+{-data Game is a record containing information about the board
+    gameBoard represents the board that is currently being played
+    gamePlayer represents who is Playing
+    gameState represents what state the game is in
+    fstCrd is a global variable to store the first coordinate the player clicked on-}
 data Game = Game { gameBoard :: Board,
                    gamePlayer :: PColor,
                    gameState :: State,
                    fstCrd :: Coordinate
                     } deriving (Eq, Show)
 
+--defines window size and name
 window =  InWindow "Chesskell" (480, 480) (100, 100)
 
+--initial state of game
 initGame = Game { gameBoard = initBoard, gamePlayer = White, gameState = Crd1, fstCrd = (0,0)}
 
+{-main
+    a function to run the game
+    SIDE EFFECTS: Opens a separate window
+-}
 main :: IO ()
 main = do
     playIO window white 30 initGame renderGame getClicks (\_ -> return)
 
 {-renderGame game
     a function to render the Board
-    RETURNS: an IO Picture containing the picture of the board if the game is running
-             an IO Picture containing the losing screen if the game is over
+    RETURNS: an I/O Picture action containing the picture of the board if the game is running
+             an I/O Picture action containing the losing screen if the game is over
 -}
 renderGame :: Game -> IO Picture 
 renderGame game = case gameState game of
@@ -109,7 +118,8 @@ renderBoard imgs brd =
 
 {-getClicks event game
     a function to handle the mouseclicks in the window and make moves on the board
-    RETURNS: an IO Game action
+    RETURNS: an I/O Game action
+    SIDE EFFECTS: Prints text to terminal
 -}
 getClicks :: Event -> Game -> IO Game
 getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
@@ -154,8 +164,9 @@ parseCoord (x,y) = (floor ((x + 240)/60),floor ((240 - y)/60))
 
 {-validMoveGame firstcoordinate secondcoordinate game
     a function to update the gameboard with a new move if the move from the first to the second coordinate is valid
-    RETURNS: an IO Game action where the gameBoard is updated, gamePlayer is switched and gameState is Crd1 if a move is made
-             an IO Game action where the gameBoard is updated, gamePlayer is the same and gameState is Crd1 if no move is made
+    RETURNS: an I/O Game action where the gameBoard is updated, gamePlayer is switched and gameState is Crd1 if a move is made
+             an I/O Game action where the gameBoard is updated, gamePlayer is the same and gameState is Crd1 if no move is made
+    SIDE EFFECTS: Prints text to terminal
 -}
 validMoveGame :: Coordinate -> Coordinate -> Game -> IO Game 
 validMoveGame crd1 crd2 game = do
@@ -184,8 +195,8 @@ validMoveGame crd1 crd2 game = do
 
 {-autopromote clr brd
     a function to promote a pawn to a queen if there is a pawn that has reached the other side
-    RETURNS: an IO Board action where the pawn has been promoted to a queen if there was a pawn that could be promote
-             an IO Board action with the same board if no pawn has been promoted
+    RETURNS: an I/O Board action where the pawn has been promoted to a queen if there was a pawn that could be promote
+             an I/O Board action with the same board if no pawn has been promoted
 -}
 autopromote :: PColor -> Board -> IO Board 
 autopromote clr brd = do

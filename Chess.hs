@@ -60,7 +60,8 @@ initBoard = [[Piece Black (Rook Unmoved ),Piece Black Knight,Piece Black Bishop,
 {-printBoard color board
     a function that prints a board to the terminal for colors perspective
     PRE: type in "chcp.com 65001" in terminal before ghci so u it can print the pieces. If you are on Windows
-    RETURNS: an IO action that prints multiple lines of strings 
+    RETURNS: an IO action
+    SIDE EFFECTS: Prints the board to terminal
 -}
 printBoard :: PColor -> Board -> IO ()
 printBoard clr brd = putStrLn (case clr of
@@ -141,7 +142,7 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
 
 {-movePiece board crd1 crd2
     a function to move a piece from crd1 to crd2 on board
-    RETURNS: a new IO Board from board
+    RETURNS: an I/O Board action
 -}
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
 movePiece board crd1 crd2 = do
@@ -165,10 +166,18 @@ movePiece board crd1 crd2 = do
                                                                     else Piece clr (Pawn SingleMove)
                                 Piece clr (Pawn DoubleMove) -> Piece clr (Pawn SingleMove)
                                 _ -> piece)
-    where   kCastle White brd = do 
+    where   {-kCastle clr brd
+                a function to perform the castling move on the kingside for the player on a board
+                RETURNS: a new board with castling performed
+            -}
+            kCastle White brd = do 
                 changeSquare crd1 (changeSquare (5,7) (changeSquare (7,7) (changeSquare crd2 brd (Piece White (King Moved))) Empty) (Piece White (Rook Moved))) Empty
             kCastle Black brd = do 
                 changeSquare crd1 (changeSquare (5,0) (changeSquare (7,0) (changeSquare crd2 brd (Piece Black (King Moved))) Empty) (Piece Black (Rook Moved))) Empty
+            {-qCastle clr brd
+                a function to perform the castling move on the queenside for the player on a board
+                RETURNS: a new board with castling performed
+            -}
             qCastle White brd = do 
                 changeSquare crd1 (changeSquare (3,7) (changeSquare (0,7) (changeSquare crd2 brd (Piece White (King Moved))) Empty) (Piece White (Rook Moved))) Empty
             qCastle Black brd = do 
@@ -194,12 +203,13 @@ resetDoubleMove clr brd = if null doublepawn then brd else changeSquare (head do
 
 {-play brd clr
     play function allows a clr to start the game and make the first move on a specific brd
-   EXAMPLES: play initBoard White :  Starts a standard chess game -}
+    SIDE EFFECTS: Prints text to terminal
+    EXAMPLES: play initBoard White :  Starts a standard chess game -}
 play :: Board -> PColor -> IO ()
 play brd clr = do
     let brd' = resetDoubleMove clr brd
     printBoard clr brd
-    mated <- isMated clr brd
+    mated <- hasNoValidMoves clr brd
     if mated
         then if isChecked clr brd 
             then do
@@ -217,6 +227,8 @@ play brd clr = do
 
 {-playerTurn crd1 crd2 clr brd
     a function that performs one turn for a color on board by checking if a move from crd1 to crd2 is legal.
+    RETURNS: An I/O Board action
+    SIDE EFFECTS: Prints text to terminal
 -}       
 playerTurn :: Coordinate  -> Coordinate  -> PColor -> Board -> IO Board 
 playerTurn crd1 crd2 clr brd = do
@@ -229,6 +241,8 @@ playerTurn crd1 crd2 clr brd = do
 
 {-askMove
     a function that ask a player to make a specific move and returns a coordinate if both inputs are a valid coordinate on the board. 
+    RETURNS: An I/O action with two coordinates
+    SIDE EFFECTS: Prints to text terminal and gets input from terminal
 -}
 askMove :: IO (Coordinate, Coordinate)
 askMove = do
@@ -242,7 +256,9 @@ askMove = do
             askMove
 
 {-makeMove clr brd
-    a function that a promts clr for two coordinates and then sends it to playerTurn-}
+    a function that a promts clr for two coordinates and then sends it to playerTurn
+    RETURNS: an I/O Board action
+    -}
 makeMove :: PColor -> Board -> IO Board
 makeMove clr brd = do
         (crd1,crd2) <- askMove
@@ -255,6 +271,7 @@ validInputs = [x:show y | x <- ['a'..'h'], y <- [1..8]]
     a function to make a move for color with piece from first coordinate to second coordinate on board if it is valid
     RETURNS: a new board if a valid move is made
              outputs "Invalid Move" if the move is invalid and then asks for new coordinates
+    SIDE EFFECTS: Prints text to terminal
 -}
 validMove :: PColor -> PType -> Coordinate -> Coordinate -> Board -> IO Board 
 validMove clr piece crd1 crd2 brd = do
@@ -276,11 +293,13 @@ validMove clr piece crd1 crd2 brd = do
                 putStrLn "Invalid Move"
                 makeMove clr brd
 
-{-isMated clr brd
-    a function to check if clr is mated on brd
+{-hasNoValidMoves clr brd
+    a function to check if a player has no valid moves on a board
+    RETURNS: an I/O Bool action.
+             TRUE iff clr has no legal moves on brd
 -}
-isMated :: PColor -> Board -> IO Bool
-isMated clr brd = do
+hasNoValidMoves :: PColor -> Board -> IO Bool
+hasNoValidMoves clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
                         (Pawn _) -> mapM (movePiece brd x) (pawnMoves x clr brd)
                         Knight -> mapM (movePiece brd x) (knightmoves x clr brd)
@@ -293,6 +312,7 @@ isMated clr brd = do
             return $ notElem False (map (isChecked clr) allbrds)
 {-promote clr brd
     a function that changes a pawn to another piece if it has reached the opposite back rank
+    RETURNS: an I/O Board action
 -}
 promote :: PColor -> Board -> IO Board 
 promote clr brd = do
@@ -304,6 +324,8 @@ promote clr brd = do
                                                         
 {-askPromote
     a function to prompt the player for a piece and then returns the players choice
+    RETURNS: an I/O PType action
+    SIDE EFFECTS: Prints text to terminal and gets input from terminal
 -}
 askPromote :: IO PType
 askPromote = do
