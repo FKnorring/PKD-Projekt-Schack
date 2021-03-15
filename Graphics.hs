@@ -175,11 +175,11 @@ validMoveGame crd1 crd2 game = do
             piece = getType $ getSquare crd1 brd
             pieceMoves = case piece of
                     (Pawn _) -> pawnMoves crd1 clr brd
-                    Knight -> knightmoves crd1 clr brd
-                    Bishop -> bishopmoves crd1 clr brd
-                    Queen -> queenmoves crd1 clr brd
-                    (Rook _) -> rookmoves crd1 clr brd
-                    (King _) -> kingmoves crd1 clr brd ++ castlemoves clr brd
+                    Knight -> knightMoves crd1 clr brd
+                    Bishop -> bishopMoves crd1 clr brd
+                    Queen -> queenMoves crd1 clr brd
+                    (Rook _) -> rookMoves crd1 clr brd
+                    (King _) -> kingMoves crd1 clr brd ++ castleMoves clr brd
         newbrd <- movePiece brd crd1 crd2
         if crd2 `elem` pieceMoves   
             then if isChecked clr newbrd
