@@ -123,7 +123,7 @@ renderBoard imgs brd =
 -}
 getClicks :: Event -> Game -> IO Game
 getClicks (EventKey (MouseButton LeftButton) Down _ (x,y)) game = do
-    mated <- isMated (gamePlayer game) (gameBoard game)
+    mated <- hasNoValidMoves (gamePlayer game) (gameBoard game)
     if mated
     then if isChecked (gamePlayer game) (gameBoard game) then return $ game {gameState = Mate}
                               else return $ game {gameState = Stalemate}
