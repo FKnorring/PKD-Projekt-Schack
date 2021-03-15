@@ -141,7 +141,7 @@ enPassant clr brd crd1 crd2 = (isEmpty (getSquare crd2 brd) && (front || back)) 
 
 
 {-movePiece board crd1 crd2
-    a function to move a piece from crd1 to crd2 on board
+    a function to move a piece on a board
     RETURNS: an I/O Board action
 -}
 movePiece :: Board -> Coordinate -> Coordinate  -> IO Board
