@@ -212,72 +212,72 @@ diagFL (x,y) clr brd
     | otherwise = [(x-1,y-1)]
 
 
-{- rookmoves (x,y) clr brd
+{- rookMoves (x,y) clr brd
     a function that checks all possible moves for clr rook on (x,y) on brd and puts them in a list of coordinates
   RETURNS: A list of tuples containg two ints
-  EXAMPLES: rookmoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4)]
-            rookmoves (4,4) Black initBoard = [(4,3),(4,2),(4,5),(4,6),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4)]
-            rookmoves (3,3) White initBoard = [(3,2),(3,1),(3,4),(3,5),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3)]
-            rookmoves (3,3) Black initBoard = [(3,2),(3,4),(3,5),(3,6),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3)]
+  EXAMPLES: rookMoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4)]
+            rookMoves (4,4) Black initBoard = [(4,3),(4,2),(4,5),(4,6),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4)]
+            rookMoves (3,3) White initBoard = [(3,2),(3,1),(3,4),(3,5),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3)]
+            rookMoves (3,3) Black initBoard = [(3,2),(3,4),(3,5),(3,6),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3)]
 -}
-rookmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-rookmoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
+rookMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+rookMoves (x,y) clr brd = toFront (x,y) clr brd ++ toBack (x,y) clr brd ++ toLeft (x,y) clr brd ++ toRight (x,y) clr brd
 
 {-
-bishopmoves (x,y) clr brd
+bishopMoves (x,y) clr brd
     a function that checks all possible moves for clr bishop on (x,y) on brd and puts them in a list of coordinates
   RETURNS : A list of tuples containing two ints
-  EXAMPLES: bishopmoves (4,4) White initBoard = [(5,3),(6,2),(7,1),(3,3),(2,2),(1,1),(5,5),(3,5)]
-            bishopmoves (4,4) Black initBoard = [(5,3),(6,2),(3,3),(2,2),(5,5),(6,6),(3,5),(2,6)]
-            bishopmoves (3,3) White initBoard = [(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
-            bishopmoves (3,3) Black initBoard = [(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
+  EXAMPLES: bishopMoves (4,4) White initBoard = [(5,3),(6,2),(7,1),(3,3),(2,2),(1,1),(5,5),(3,5)]
+            bishopMoves (4,4) Black initBoard = [(5,3),(6,2),(3,3),(2,2),(5,5),(6,6),(3,5),(2,6)]
+            bishopMoves (3,3) White initBoard = [(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
+            bishopMoves (3,3) Black initBoard = [(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
 -}
-bishopmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-bishopmoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
+bishopMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+bishopMoves (x,y) clr brd = diagFR (x,y) clr brd ++ diagFL (x,y) clr brd ++ diagBR (x,y) clr brd ++ diagBL (x,y) clr brd
 
-{-queenmoves (x,y) clr brd 
+{-queenMoves (x,y) clr brd 
     a function that checks all possible moves for clr queen on (x,y) on brd and puts them in a list of coordinates
   RETURNS : A list of coordinates
-  EXAMPLES: queenmoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4),(5,3),(6,2),(7,1),(3,3),(2,2),(1,1),(5,5),(3,5)]
-            queenmoves (4,4) Black initBoard = [(4,3),(4,2),(4,5),(4,6),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4),(5,3),(6,2),(3,3),(2,2),(5,5),(6,6),(3,5),(2,6)]
-            queenmoves (3,3) White initBoard = [(3,2),(3,1),(3,4),(3,5),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3),(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
-            queenmoves (3,3) Black initBoard = [(3,2),(3,4),(3,5),(3,6),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3),(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
+  EXAMPLES: queenMoves (4,4) White initBoard = [(4,3),(4,2),(4,1),(4,5),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4),(5,3),(6,2),(7,1),(3,3),(2,2),(1,1),(5,5),(3,5)]
+            queenMoves (4,4) Black initBoard = [(4,3),(4,2),(4,5),(4,6),(3,4),(2,4),(1,4),(0,4),(5,4),(6,4),(7,4),(5,3),(6,2),(3,3),(2,2),(5,5),(6,6),(3,5),(2,6)]
+            queenMoves (3,3) White initBoard = [(3,2),(3,1),(3,4),(3,5),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3),(4,2),(5,1),(2,2),(1,1),(4,4),(5,5),(2,4),(1,5)]
+            queenMoves (3,3) Black initBoard = [(3,2),(3,4),(3,5),(3,6),(2,3),(1,3),(0,3),(4,3),(5,3),(6,3),(7,3),(4,2),(2,2),(4,4),(5,5),(6,6),(2,4),(1,5),(0,6)]
 -}
-queenmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-queenmoves (x,y) clr brd = rookmoves (x,y) clr brd ++ bishopmoves (x,y) clr brd
+queenMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+queenMoves (x,y) clr brd = rookMoves (x,y) clr brd ++ bishopMoves (x,y) clr brd
 
 
-{-kingmoves (x,y) clr brd
+{-kingMoves (x,y) clr brd
     a function that checks all possible moves for clr king on (x,y) on brd and puts them in a list of coordinates
   RETURNS : A list of coordinates
-  EXAMPLES: kingmoves (2,5) White initBoard = [(1,4),(3,4),(2,4),(3,5),(1,5)]
-            kingmoves (2,5) Black initBoard = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
-            kingmoves (3,3) White initBoard = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
-            kingmoves (3,3) Black initBoard = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]-}
-kingmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-kingmoves (x,y) clr brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingmoves' (x,y))
+  EXAMPLES: kingMoves (2,5) White initBoard = [(1,4),(3,4),(2,4),(3,5),(1,5)]
+            kingMoves (2,5) Black initBoard = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
+            kingMoves (3,3) White initBoard = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
+            kingMoves (3,3) Black initBoard = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]-}
+kingMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+kingMoves (x,y) clr brd = filter 
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (kingCoords (x,y))
 
-{-kingmoves' (x,y)
-  Aux function for kingmoves which makes sure that the coordinates returned in kingmoves are valid, meaning that no int in a coordinte is < 0 or > 8
+{-kingCoords (x,y)
+  Aux function for kingMoves which makes sure that the coordinates returned in kingMoves are valid, meaning that no int in a coordinte is < 0 or > 8
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates
-  EXAMPLES: kingmoves' (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
-            kingmoves' (0,0)  = [(1,1),(0,1),(1,0)]
-            kingmoves' (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
+  EXAMPLES: kingCoords (2,5)  = [(3,6),(1,4),(3,4),(1,6),(2,4),(2,6),(3,5),(1,5)]
+            kingCoords (0,0)  = [(1,1),(0,1),(1,0)]
+            kingCoords (3,3)  = [(4,4),(2,2),(4,2),(2,4),(3,2),(3,4),(4,3),(2,3)]
 -}
-kingmoves' :: Coordinate -> [Coordinate]
-kingmoves' (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
+kingCoords :: Coordinate -> [Coordinate]
+kingCoords (x,y) = validSquares [(x+1,y+1),(x-1,y-1),(x+1,y-1),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y),(x-1,y)]
 
-{-castlemoves color board
+{-castleMoves color board
     a function to get the coordinate for castling with color on board if is is availible
     RETURNS: if castling is availible it returns a list of the coordinates where the king can move to castle
              if it is not availible it returns an empty list
-    EXAMPLES: castlemoves White initBoard == []
+    EXAMPLES: castleMoves White initBoard == []
               casltemoves Black castleBoard == [(6,0),(2,0)]
 -}
-castlemoves :: PColor -> Board -> [Coordinate]
-castlemoves clr brd = case (canCastleK clr brd, canCastleQ clr brd) of
+castleMoves :: PColor -> Board -> [Coordinate]
+castleMoves clr brd = case (canCastleK clr brd, canCastleQ clr brd) of
                                     (True,True) -> if clr == White then [(6,7),(2,7)] else [(6,0),(2,0)]
                                     (True,_) -> if clr == White then [(6,7)] else [(6,0)]
                                     (_,True) -> if clr == White then [(2,7)] else [(2,0)]
@@ -305,28 +305,28 @@ canCastleQ :: PColor -> Board -> Bool
 canCastleQ White brd = not ((3,7) `elem` possibleMoves Black brd) && clearQSide White brd
 canCastleQ Black brd = not ((3,0) `elem` possibleMoves White brd) && clearQSide Black brd
 
-{-knightmoves (x,y) clr brd
+{-knightMoves (x,y) clr brd
   a function that checks all possible moves for clr knight on (x,y) on brd and puts them in a list of coordinates
   RETURNS : A list of coordinates
-  EXAMPLES: knightmoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
-            knightmoves (2,5) Black initBoard = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
-            knightmoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
-            knightmoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
+  EXAMPLES: knightMoves (2,5) White initBoard = [(4,4),(3,3),(1,3)]
+            knightMoves (2,5) Black initBoard = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
+            knightMoves (3,3) White initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
+            knightMoves (3,3) Black initBoard = [(5,4),(5,2),(1,4),(1,4),(4,5),(2,5)]
 -}
-knightmoves :: Coordinate -> PColor -> Board -> [Coordinate]
-knightmoves (x,y) clr brd = filter 
-   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (knightmoves' (x,y))
+knightMoves :: Coordinate -> PColor -> Board -> [Coordinate]
+knightMoves (x,y) clr brd = filter 
+   (\x ->  isEmpty (getSquare x brd) || getColor (getSquare x brd) /= clr) (knightCoords (x,y))
 
-{-knightmoves' (x,y)
-  auxiliary function for knightmoves which makes sure that the coordinates returned in knightmoves are valid, meaning that no int in a coordinte is < 0 or > 8
+{-knightCoords (x,y)
+  auxiliary function for knightMoves which makes sure that the coordinates returned in knightMoves are valid, meaning that no int in a coordinte is < 0 or > 8
   PRE: the coordinate must be between (0,0) and (7,7)
   RETURNS : A list of coordinates 
-  EXAMPLES: knightmoves' (2,5)  = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
-            knightmoves' (0,0)  = [(2,1),(1,2)]
-            knightmoves' (3,3)  = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
+  EXAMPLES: knightCoords (2,5)  = [(4,6),(4,4),(0,6),(0,6),(3,7),(3,3),(1,7),(1,3)]
+            knightCoords (0,0)  = [(2,1),(1,2)]
+            knightCoords (3,3)  = [(5,4),(5,2),(1,4),(1,4),(4,5),(4,1),(2,5),(2,1)]
 -}
-knightmoves' :: Coordinate -> [Coordinate]
-knightmoves' (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1),(x-2, y-1),(x+1,y+2),(x+1,y-2),(x-1,y+2),(x-1,y-2)]
+knightCoords :: Coordinate -> [Coordinate]
+knightCoords (x,y) = validSquares [(x+2,y+1),(x+2,y-1),(x-2,y+1),(x-2, y-1),(x+1,y+2),(x+1,y-2),(x-1,y+2),(x-1,y-2)]
 
 {-getKing clr brd
     a function that finds the coordinate for clr king on board
@@ -348,11 +348,11 @@ getKing clr brd = head (filter (\x -> getSquare x brd == Piece clr (King Moved) 
 possibleMoves :: PColor -> Board -> [Coordinate]
 possibleMoves clr brd = concatMap (\x -> case getType (getSquare x brd) of 
         (Pawn _) -> pawnMoves x clr brd
-        Knight -> knightmoves x clr brd
-        Bishop -> bishopmoves x clr brd
-        Queen -> queenmoves x clr brd
-        (Rook _) -> rookmoves x clr brd
-        (King _) -> kingmoves x clr brd)
+        Knight -> knightMoves x clr brd
+        Bishop -> bishopMoves x clr brd
+        Queen -> queenMoves x clr brd
+        (Rook _) -> rookMoves x clr brd
+        (King _) -> kingMoves x clr brd)
         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
 
 {-isChecked clr brd
@@ -378,16 +378,16 @@ getPromotedPawn White brd = filter (\x -> getSquare x brd == Piece White (Pawn S
 getPromotedPawn Black brd = filter (\x -> getSquare x brd == Piece Black (Pawn SingleMove)) [(x,y) | x <- [0..7], y <- [7]]
 
 
-{-clearKSide' clr brd
+{-getKingSide clr brd
     a function that gets all squares for clr's king side on brd
   RETURNS: a list of squares containg a piece or empty.
-  EXAMPLES: clearKSide' White castleBoard = [♔, , ,♖]
-            clearKSide' Black initBoard = [♚,♝,♞,♜]
+  EXAMPLES: getKingSide White castleBoard = [♔, , ,♖]
+            getKingSide Black initBoard = [♚,♝,♞,♜]
 
 -}
-clearKSide' :: PColor ->  Board   -> [Square]
-clearKSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [7]] 
-clearKSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [0]] 
+getKingSide :: PColor ->  Board   -> [Square]
+getKingSide White brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [7]] 
+getKingSide Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [0]] 
 
 {-clearKSide clr brd
     a function that checks if the king side for clr is clear on brd
@@ -396,18 +396,18 @@ clearKSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [4..7], y <- [
               clearKSide Black castleBoard = False
               clearKSide White castleBoard = True-}
 clearKSide :: PColor -> Board -> Bool
-clearKSide clr brd = (clearKSide' clr brd) == [(Piece clr (King Unmoved)),(Empty),(Empty),(Piece clr (Rook Unmoved))]
+clearKSide clr brd = (getKingSide clr brd) == [(Piece clr (King Unmoved)),(Empty),(Empty),(Piece clr (Rook Unmoved))]
 
-{-clearQSide' clr brd
+{-getQueenSide clr brd
     a function that gets all squares for clr's queen side on brd
   RETURNS: a list of squares containg a piece or empty.
-  EXAMPLES: clearQSide' White castleBoard = [[♖, , , ,♔]
-            clearQSide' Black initBoard = [♜,♞,♝,♛,♚]
+  EXAMPLES: getQueenSide White castleBoard = [[♖, , , ,♔]
+            getQueenSide Black initBoard = [♜,♞,♝,♛,♚]
 
 -}
-clearQSide' :: PColor ->  Board   -> [Square]
-clearQSide' White brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [7]] 
-clearQSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [0]] 
+getQueenSide :: PColor ->  Board   -> [Square]
+getQueenSide White brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [7]] 
+getQueenSide Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [0]] 
 
 {-clearQSide clr brd
     a function that checks if the queen side for clr is clear on brd
@@ -417,7 +417,7 @@ clearQSide' Black brd = map (\x -> getSquare x brd) [(x,y) | x <- [0..4], y <- [
               clearQside White castleBoard = False
     -}
 clearQSide :: PColor -> Board -> Bool
-clearQSide clr brd = (clearQSide' clr brd) == [(Piece clr (Rook Unmoved)),(Empty),(Empty),(Empty),(Piece clr (King Unmoved))]
+clearQSide clr brd = (getQueenSide clr brd) == [(Piece clr (Rook Unmoved)),(Empty),(Empty),(Empty),(Piece clr (King Unmoved))]
 
 
 castleBoard :: Board

@@ -278,11 +278,11 @@ validMove clr piece crd1 crd2 brd = do
         newbrd <- movePiece brd crd1 crd2
         let pieceMoves = case piece of
                 (Pawn _) -> pawnMoves crd1 clr brd
-                Knight -> knightmoves crd1 clr brd
-                Bishop -> bishopmoves crd1 clr brd
-                Queen -> queenmoves crd1 clr brd
-                (Rook _) -> rookmoves crd1 clr brd
-                (King _) -> kingmoves crd1 clr brd ++ castlemoves clr brd
+                Knight -> knightMoves crd1 clr brd
+                Bishop -> bishopMoves crd1 clr brd
+                Queen -> queenMoves crd1 clr brd
+                (Rook _) -> rookMoves crd1 clr brd
+                (King _) -> kingMoves crd1 clr brd ++ castleMoves clr brd
         if crd2 `elem` pieceMoves        
             then if isChecked clr newbrd
                 then do
@@ -302,11 +302,11 @@ hasNoValidMoves :: PColor -> Board -> IO Bool
 hasNoValidMoves clr brd = do
             brds <- mapM (\x -> case getType (getSquare x brd) of 
                         (Pawn _) -> mapM (movePiece brd x) (pawnMoves x clr brd)
-                        Knight -> mapM (movePiece brd x) (knightmoves x clr brd)
-                        Bishop -> mapM (movePiece brd x) (bishopmoves x clr brd)
-                        Queen -> mapM (movePiece brd x) (queenmoves x clr brd)
-                        (Rook _) -> mapM (movePiece brd x) (rookmoves x clr brd)
-                        (King _) -> mapM (movePiece brd x) (kingmoves x clr brd))
+                        Knight -> mapM (movePiece brd x) (knightMoves x clr brd)
+                        Bishop -> mapM (movePiece brd x) (bishopMoves x clr brd)
+                        Queen -> mapM (movePiece brd x) (queenMoves x clr brd)
+                        (Rook _) -> mapM (movePiece brd x) (rookMoves x clr brd)
+                        (King _) -> mapM (movePiece brd x) (kingMoves x clr brd))
                         $ filter (\x -> getColor (getSquare x brd) == clr) [(x,y) | x <- [0..7], y <- [0..7]]
             let allbrds = concat brds
             return $ notElem False (map (isChecked clr) allbrds)
@@ -382,13 +382,13 @@ test9 = TestCase $ assertEqual "checks if promotedPawn function finds the correc
 
 test10 = TestCase $ assertEqual "checks if promotedPawn function finds the correct promotedPawn on the testBoard" [] (getPromotedPawn Black testBoard)
 
-test11 = TestCase $ assertEqual "Checks the White knights possible moves on the startboard" [(2,5),(0,5)] (knightmoves (1,7) White initBoard)
+test11 = TestCase $ assertEqual "Checks the White knights possible moves on the startboard" [(2,5),(0,5)] (knightMoves (1,7) White initBoard)
 
 test12 = TestCase $ assertEqual "finds the square the pawn can move to make the move enPassant" [(7,2)] (enPassantSquare (6,3) White testBoard)
 
-test13 = TestCase $ assertEqual "Checks the White kings possible moves on the testBoard" [(4,6)] (kingmoves (4,7) White testBoard)
+test13 = TestCase $ assertEqual "Checks the White kings possible moves on the testBoard" [(4,6)] (kingMoves (4,7) White testBoard)
 
-test14 = TestCase $ assertEqual "test the black kings possible moves on testBoard " [(4,1)] (kingmoves (3,0) Black testBoard)
+test14 = TestCase $ assertEqual "test the black kings possible moves on testBoard " [(4,1)] (kingMoves (3,0) Black testBoard)
 
 test15 = TestCase $ assertEqual "test strTocord function for a number of stings" [(0,8),(1,1),(2,3),(1,5)] (map strToCoord ["a0", "b7","c5","b3"])
 
